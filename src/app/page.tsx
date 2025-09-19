@@ -15,7 +15,8 @@ import {
   TableRow,
   TableCell,
   Chip,
-  Spacer
+  Spacer,
+  Tooltip
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -89,6 +90,14 @@ const compoundInflation = (startYM: string, endYM: string) => {
 
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
+    { id: uuidv4(), date: '2016-09', amount: 15392 },
+    { id: uuidv4(), date: '2017-06', amount: 17000 },
+    { id: uuidv4(), date: '2018-08', amount: 24992.76 },
+    { id: uuidv4(), date: '2019-05', amount: 27000 },
+    { id: uuidv4(), date: '2019-06', amount: 29000 },
+    { id: uuidv4(), date: '2021-04', amount: 34000 },
+    { id: uuidv4(), date: '2022-01', amount: 40000 },
+    { id: uuidv4(), date: '2022-06', amount: 50000 },
     { id: uuidv4(), date: '2023-08', amount: 75000 },
     { id: uuidv4(), date: '2024-01', amount: 78187.5 },
     { id: uuidv4(), date: '2025-02', amount: 83000 }
@@ -276,15 +285,45 @@ export default function SalaryInflationPage() {
           <CardHeader>
             <h2 className="text-lg font-medium">Salary History</h2>
           </CardHeader>
-          <CardBody>
+          <CardBody className="font-mono">
             <Table aria-label="Salary history table" removeWrapper>
               <TableHeader>
-                <TableColumn>DATE</TableColumn>
-                <TableColumn>ACTUAL</TableColumn>
-                <TableColumn>% vs Prev</TableColumn>
+                <TableColumn>Date</TableColumn>
+                <TableColumn>Salary</TableColumn>
+                <TableColumn>Pay Difference</TableColumn>
                 <TableColumn>Inflation over period</TableColumn>
-                <TableColumn>Inflation‑matched</TableColumn>
-                <TableColumn>% vs Inflation</TableColumn>
+                <TableColumn>
+                  <Tooltip
+                    content={
+                      <div className="px-1 py-2">
+                        <div className="text-small">
+                          What you would have gotten if your employer ONLY
+                          matched to inflation. <br />
+                          That is, no real loss of spending power in your wage.
+                        </div>
+                      </div>
+                    }
+                    showArrow={true}
+                  >
+                    Inflation‑matched Salary (?)
+                  </Tooltip>
+                </TableColumn>
+                <TableColumn>
+                  <Tooltip
+                    content={
+                      <div className="px-1 py-2">
+                        <div className="text-small">
+                          How your new salary compares to the inflation-matched
+                          value.
+                          <br /> Negative values are a <strong>PAY CUT</strong>.
+                        </div>
+                      </div>
+                    }
+                    showArrow={true}
+                  >
+                    Salary vs Inflation (?)
+                  </Tooltip>
+                </TableColumn>
                 <TableColumn hideHeader>Actions</TableColumn>
               </TableHeader>
               <TableBody emptyContent="Nothing to see here. Put your current salary and the date you got it into the box above.">
