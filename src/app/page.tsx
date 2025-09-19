@@ -277,66 +277,60 @@ export default function SalaryInflationPage() {
             <h2 className="text-lg font-medium">Salary History</h2>
           </CardHeader>
           <CardBody>
-            {rows.length === 0 ? (
-              <div className="text-center py-12 text-default-400">
-                No entries yet
-              </div>
-            ) : (
-              <Table aria-label="Salary history table" removeWrapper>
-                <TableHeader>
-                  <TableColumn>DATE</TableColumn>
-                  <TableColumn>ACTUAL</TableColumn>
-                  <TableColumn>% vs Prev</TableColumn>
-                  <TableColumn>Inflation over period</TableColumn>
-                  <TableColumn>Inflation‑matched</TableColumn>
-                  <TableColumn>% vs Inflation</TableColumn>
-                  <TableColumn>ACTIONS</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r, idx) => (
-                    <TableRow key={r.id}>
-                      <TableCell>{r.date}</TableCell>
-                      <TableCell className="font-semibold">
-                        {formatCurrency(r.amount)}
-                      </TableCell>
-                      <TableCell>
-                        {idx === 0 ? '—' : formatPct(r.prevPct)}
-                      </TableCell>
-                      <TableCell>
-                        {idx === 0 ? '—' : `${r.inflationPct?.toFixed(2)}%`}
-                      </TableCell>
-                      <TableCell>
-                        {idx === 0 ? '—' : formatCurrency(r.inflationMatched)}
-                      </TableCell>
-                      <TableCell>
-                        {idx === 0 ? (
-                          '—'
-                        ) : (
-                          <Chip
-                            color={(r.realPct ?? 0) >= 0 ? 'success' : 'danger'}
-                            variant="flat"
-                            size="sm"
-                          >
-                            {formatPct(r.realPct)}
-                          </Chip>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          isIconOnly
-                          color="danger"
-                          variant="light"
+            <Table aria-label="Salary history table" removeWrapper>
+              <TableHeader>
+                <TableColumn>DATE</TableColumn>
+                <TableColumn>ACTUAL</TableColumn>
+                <TableColumn>% vs Prev</TableColumn>
+                <TableColumn>Inflation over period</TableColumn>
+                <TableColumn>Inflation‑matched</TableColumn>
+                <TableColumn>% vs Inflation</TableColumn>
+                <TableColumn hideHeader>Actions</TableColumn>
+              </TableHeader>
+              <TableBody emptyContent="Nothing to see here. Put your current salary and the date you got it into the box above.">
+                {rows.map((r, idx) => (
+                  <TableRow key={r.id}>
+                    <TableCell>{r.date}</TableCell>
+                    <TableCell className="font-semibold">
+                      {formatCurrency(r.amount)}
+                    </TableCell>
+                    <TableCell>
+                      {idx === 0 ? '—' : formatPct(r.prevPct)}
+                    </TableCell>
+                    <TableCell>
+                      {idx === 0 ? '—' : `${r.inflationPct?.toFixed(2)}%`}
+                    </TableCell>
+                    <TableCell>
+                      {idx === 0 ? '—' : formatCurrency(r.inflationMatched)}
+                    </TableCell>
+                    <TableCell>
+                      {idx === 0 ? (
+                        '—'
+                      ) : (
+                        <Chip
+                          color={(r.realPct ?? 0) >= 0 ? 'success' : 'danger'}
+                          variant="flat"
                           size="sm"
-                          onPress={() => removeEntry(r.id)}
                         >
-                          ✕
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+                          {formatPct(r.realPct)}
+                        </Chip>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        isIconOnly
+                        color="danger"
+                        variant="light"
+                        size="sm"
+                        onPress={() => removeEntry(r.id)}
+                      >
+                        ✕
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardBody>
         </Card>
 
