@@ -30,32 +30,27 @@ interface SalaryEntry {
   realPct?: number // % difference of this salary vs inflation-matched amount
 }
 
-// CPIH sample: year-on-year annual rates (%) for each month (keys "YYYY-MM")
-// (Replace with real CPIH series)
-const cpihData: Record<string, number> = {
-  '2023-08': 3.788,
-  '2023-09': 3.829,
-  '2023-10': 4.6,
-  '2023-11': 3.941,
-  '2023-12': 3.993,
-  '2024-01': 3.981,
-  '2024-02': 3.411,
-  '2024-03': 3.228,
-  '2024-04': 2.333,
-  '2024-05': 1.99,
-  '2024-06': 1.975,
-  '2024-07': 2.234,
-  '2024-08': 2.216,
-  '2024-09': 1.68,
-  '2024-10': 2.281,
-  '2024-11': 2.622,
-  '2024-12': 2.503,
-  '2025-01': 2.983,
-  '2025-02': 2.836
-}
+import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
+/*TODO FIXME some dates missing or inaccurate.
+ parsed = raw
+  .split('\n')
+  .filter(Boolean)
+  .map((l) => l.split(',').map((c) => c.replaceAll('"', '')))
+  .slice(1)
+  .map((r) => ({
+    date: new Date(`01 ${r[0]}`).toISOString().slice(0, 7),
+    cpih: Number(r[1]),
+    cpi: Number(r[2]),
+    ooh: Number(r[3])
+  }))
+  .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
 
-// helpers
-const monthKey = (isoMonth: string) => isoMonth.slice(0, 7) // ensure "YYYY-MM"
+type InflationDataEntry = keyof typeof inflationData
+type InflationType = 'cpih' | 'cpi' | 'ooh'
+const inflationType: InflationType = 'cpih'
+
+const monthKey = (isoMonth: string): InflationDataEntry =>
+  isoMonth.slice(0, 7) as InflationDataEntry
 const addMonths = (ym: string, n = 1) => {
   const [y, m] = ym.split('-').map(Number)
   const d = new Date(y, m - 1 + n, 1)
@@ -78,8 +73,9 @@ const compoundInflation = (startYM: string, endYM: string) => {
   // include start month and end month
   while (true) {
     const key = monthKey(current)
-    const annual = cpihData[key] ?? 0
-    multiplier *= monthlyMultiplierFromAnnual(annual)
+    const inflationEntry = inflationData[key]
+    const inflationTypeValue = inflationEntry[inflationType]
+    multiplier *= monthlyMultiplierFromAnnual(inflationTypeValue || 0)
     if (current === endYM) break
     current = addMonths(current, 1)
     // safety to avoid infinite loop
@@ -90,6 +86,7 @@ const compoundInflation = (startYM: string, endYM: string) => {
 
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
+    { id: uuidv4(), date: '2016-07', amount: 15392 },
     { id: uuidv4(), date: '2016-09', amount: 15392 },
     { id: uuidv4(), date: '2017-06', amount: 17000 },
     { id: uuidv4(), date: '2018-08', amount: 24992.76 },
