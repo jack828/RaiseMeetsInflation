@@ -10,20 +10,18 @@ import {
 import { useTheme } from 'next-themes'
 
 export default function NavigationBar() {
-  const { theme, setTheme } = useTheme()
-
+  const { theme, systemTheme, setTheme } = useTheme()
+  const current = theme === 'system' ? systemTheme : theme
   return (
     <Navbar isBordered className="shadow-sm">
       <NavbarBrand>
-        <p className="text-xl font-bold text-white bg-clip-text text-transparent">
-          Raise Meets Inflation
-        </p>
+        <p className="text-xl font-bold">Raise Meets Inflation</p>
       </NavbarBrand>
 
       <NavbarContent justify="end">
         <NavbarItem>
           <Switch
-            isSelected={theme === 'dark'}
+            isSelected={current === 'dark'}
             onValueChange={(isSelected) =>
               setTheme(isSelected ? 'dark' : 'light')
             }
