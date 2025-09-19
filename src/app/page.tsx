@@ -108,7 +108,7 @@ export default function SalaryInflationPage() {
 
     while (current <= endDate) {
       const monthKey = current.toISOString().slice(0, 7)
-      const monthlyRate = cpihData[monthKey] || 2.5 // Default 2.5% if no data
+      const monthlyRate = cpihData[monthKey] || 0 
       cumulativeInflation += monthlyRate / 12 // Convert annual to monthly
       current.setMonth(current.getMonth() + 1)
     }
@@ -119,7 +119,7 @@ export default function SalaryInflationPage() {
   const addSalary = () => {
     if (!date || !amount) return
 
-    const parsedAmount = parseFloat(amount)
+    const parsedAmount = Number(amount)
     if (isNaN(parsedAmount)) return
 
     const inflationAdjusted = calculateInflationAdjusted(parsedAmount, date)
@@ -167,9 +167,7 @@ export default function SalaryInflationPage() {
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         <Card className="shadow-xl">
           <CardHeader className="pb-4">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Salary vs Inflation Tracker
-            </h1>
+            <h1 className="text-3xl font-bold">Salary vs Inflation Tracker</h1>
           </CardHeader>
           <CardBody>
             <p className="text-default-600">
@@ -189,15 +187,17 @@ export default function SalaryInflationPage() {
               <Input
                 type="month"
                 label="Month & Year"
-                placeholder="Select month"
+                placeholder="YYYY-MM"
+                pattern="[0-9]{4}-[0-9]{2}"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 variant="bordered"
               />
               <Input
-                type="number"
+                type="text"
                 label="Salary Amount"
-                placeholder="0.00"
+                placeholder="9001"
+                pattern="[0-9]+"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 startContent={
