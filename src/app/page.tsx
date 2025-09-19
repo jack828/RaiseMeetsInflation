@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Card,
   CardHeader,
@@ -15,283 +15,311 @@ import {
   TableRow,
   TableCell,
   Chip,
-  Divider,
   Spacer
 } from '@heroui/react'
+import { v4 as uuidv4 } from 'uuid'
 
 interface SalaryEntry {
   id: string
-  date: string
+  date: string // "YYYY-MM"
   amount: number
-  inflationAdjusted: number
-  difference: number
+  prevPct?: number // % difference vs previous nominal
+  inflationMatched?: number // what previous salary would need to be to match inflation to this date
+  inflationPct?: number // % inflation over period from previous to this date
+  realPct?: number // % difference of this salary vs inflation-matched amount
 }
 
-// Placeholder CPIH data (monthly % change)
+// CPIH sample: year-on-year annual rates (%) for each month (keys "YYYY-MM")
+// (Replace with real CPIH series)
 const cpihData: Record<string, number> = {
-  '2020-01': 2.1,
-  '2020-02': 2.3,
-  '2020-03': 2.5,
-  '2020-04': 2.0,
-  '2020-05': 2.2,
-  '2020-06': 2.4,
-  '2020-07': 2.8,
-  '2020-08': 3.1,
-  '2020-09': 3.4,
-  '2020-10': 3.7,
-  '2020-11': 3.9,
-  '2020-12': 4.1,
-  '2021-01': 4.2,
-  '2021-02': 4.4,
-  '2021-03': 4.5,
-  '2021-04': 4.3,
-  '2021-05': 4.1,
-  '2021-06': 3.9,
-  '2021-07': 3.8,
-  '2021-08': 3.5,
-  '2021-09': 3.3,
-  '2021-10': 3.1,
-  '2021-11': 2.9,
-  '2021-12': 2.7,
-  '2022-01': 2.5,
-  '2022-02': 2.8,
-  '2022-03': 3.2,
-  '2022-04': 3.6,
-  '2022-05': 4.0,
-  '2022-06': 4.5,
-  '2022-07': 5.0,
-  '2022-08': 5.2,
-  '2022-09': 5.5,
-  '2022-10': 5.7,
-  '2022-11': 5.8,
-  '2022-12': 5.9,
-  '2023-01': 5.8,
-  '2023-02': 5.6,
-  '2023-03': 5.3,
-  '2023-04': 4.9,
-  '2023-05': 4.5,
-  '2023-06': 4.1,
-  '2023-07': 3.8,
-  '2023-08': 3.5,
-  '2023-09': 3.2,
-  '2023-10': 2.9,
-  '2023-11': 2.7,
-  '2023-12': 2.5,
-  '2024-01': 2.4,
-  '2024-02': 2.3,
-  '2024-03': 2.2,
-  '2024-04': 2.1,
-  '2024-05': 2.0,
-  '2024-06': 2.1,
-  '2024-07': 2.2,
-  '2024-08': 2.3,
-  '2024-09': 2.4,
-  '2024-10': 2.5,
-  '2024-11': 2.6
+  '2023-08': 3.788,
+  '2023-09': 3.829,
+  '2023-10': 4.6,
+  '2023-11': 3.941,
+  '2023-12': 3.993,
+  '2024-01': 3.981,
+  '2024-02': 3.411,
+  '2024-03': 3.228,
+  '2024-04': 2.333,
+  '2024-05': 1.99,
+  '2024-06': 1.975,
+  '2024-07': 2.234,
+  '2024-08': 2.216,
+  '2024-09': 1.68,
+  '2024-10': 2.281,
+  '2024-11': 2.622,
+  '2024-12': 2.503,
+  '2025-01': 2.983,
+  '2025-02': 2.836
+}
+
+// helpers
+const monthKey = (isoMonth: string) => isoMonth.slice(0, 7) // ensure "YYYY-MM"
+const addMonths = (ym: string, n = 1) => {
+  const [y, m] = ym.split('-').map(Number)
+  const d = new Date(y, m - 1 + n, 1)
+  return `${d.getFullYear().toString().padStart(4, '0')}-${(d.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}`
+}
+
+// Convert annual CPIH % (year-on-year) to monthly multiplier for that month.
+// If cpih is the annual rate (e.g. 3.0), monthly multiplier = (1 + cpih/100)^(1/12)
+const monthlyMultiplierFromAnnual = (annualPct: number) =>
+  Math.pow(1 + annualPct / 100, 1 / 12)
+
+// Compound inflation multiplier from start (inclusive) to end (inclusive previous month).
+// Example: start "2023-08" -> end "2024-01" will compound months Aug2023..Jan2024 inclusive.
+const compoundInflation = (startYM: string, endYM: string) => {
+  if (!startYM || !endYM) return 1
+  let current = startYM
+  let multiplier = 1
+  // include start month and end month
+  while (true) {
+    const key = monthKey(current)
+    const annual = cpihData[key] ?? 0
+    multiplier *= monthlyMultiplierFromAnnual(annual)
+    if (current === endYM) break
+    current = addMonths(current, 1)
+    // safety to avoid infinite loop
+    if (multiplier > 1e6) break
+  }
+  return multiplier
 }
 
 export default function SalaryInflationPage() {
-  const [salaries, setSalaries] = useState<SalaryEntry[]>([])
+  const [entries, setEntries] = useState<SalaryEntry[]>([
+    { id: uuidv4(), date: '2023-08', amount: 75000 },
+    { id: uuidv4(), date: '2024-01', amount: 78187.5 },
+    { id: uuidv4(), date: '2025-02', amount: 83000 }
+  ])
   const [date, setDate] = useState('')
   const [amount, setAmount] = useState('')
 
-  const calculateInflationAdjusted = (
-    originalAmount: number,
-    originalDate: string,
-    targetDate: string = new Date().toISOString().slice(0, 7)
-  ): number => {
-    const startDate = new Date(originalDate)
-    const endDate = new Date(targetDate)
+  // derive table rows with comparisons vs previous
+  const rows = useMemo(() => {
+    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+    return sorted.map((entry, i, arr) => {
+      if (i === 0) return { ...entry } as SalaryEntry
+      const prev = arr[i - 1]
+      // nominal % change vs previous
+      const prevPct = ((entry.amount - prev.amount) / prev.amount) * 100
 
-    let cumulativeInflation = 0
-    const current = new Date(startDate)
+      // compound inflation from prev.date to entry.date
+      const inflationMultiplier = compoundInflation(prev.date, entry.date)
+      const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
+      const inflationPct = (inflationMultiplier - 1) * 100
 
-    while (current <= endDate) {
-      const monthKey = current.toISOString().slice(0, 7)
-      const monthlyRate = cpihData[monthKey] || 0 
-      cumulativeInflation += monthlyRate / 12 // Convert annual to monthly
-      current.setMonth(current.getMonth() + 1)
-    }
+      // real % difference of actual new salary vs inflation-matched value
+      const realPct =
+        ((entry.amount - inflationMatched) / inflationMatched) * 100
 
-    return originalAmount * (1 + cumulativeInflation / 100)
-  }
+      return {
+        ...entry,
+        prevPct,
+        inflationMatched,
+        inflationPct,
+        realPct
+      } as SalaryEntry
+    })
+  }, [entries])
 
-  const addSalary = () => {
+  const addEntry = () => {
     if (!date || !amount) return
-
-    const parsedAmount = Number(amount)
-    if (isNaN(parsedAmount)) return
-
-    const inflationAdjusted = calculateInflationAdjusted(parsedAmount, date)
-    const difference =
-      ((parsedAmount - inflationAdjusted) / inflationAdjusted) * 100
-
-    const newEntry: SalaryEntry = {
-      id: Date.now().toString(),
-      date,
-      amount: parsedAmount,
-      inflationAdjusted,
-      difference
-    }
-
-    setSalaries(
-      [...salaries, newEntry].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    const amt = Number(amount.replace(/[,£\s]/g, ''))
+    if (Number.isNaN(amt) || amt <= 0) return
+    setEntries((s) =>
+      [...s, { id: uuidv4(), date: monthKey(date), amount: amt }].sort((a, b) =>
+        a.date.localeCompare(b.date)
       )
     )
-
     setDate('')
     setAmount('')
   }
 
-  const removeSalary = (id: string) => {
-    setSalaries(salaries.filter((s) => s.id !== id))
-  }
+  const removeEntry = (id: string) =>
+    setEntries((s) => s.filter((r) => r.id !== id))
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP'
-    }).format(value)
-  }
+  const formatCurrency = (v?: number) =>
+    v == null
+      ? '—'
+      : new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: 'GBP'
+        }).format(v)
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-      month: 'short',
-      year: 'numeric'
-    })
-  }
+  const formatPct = (v?: number) =>
+    v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <Card className="shadow-xl">
-          <CardHeader className="pb-4">
-            <h1 className="text-3xl font-bold">Salary vs Inflation Tracker</h1>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <Card className="shadow-lg">
+          <CardHeader className="flex-col">
+            <h1 className="text-2xl font-semibold">Salary vs CPIH</h1>
+            <p className="text-sm text-default-600">
+              Enter month and salary; compares nominal change to inflation.
+            </p>
+          </CardHeader>
+
+          <CardBody>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Input
+                  type="month"
+                  label="Month & Year"
+                  placeholder="YYYY-MM"
+                  value={date}
+                  onChange={(e: any) => setDate(e.target.value)}
+                  variant="bordered"
+                />
+              </div>
+              <div>
+                <Input
+                  type="text"
+                  label="Salary"
+                  placeholder="9001"
+                  value={amount}
+                  onChange={(e: any) => setAmount(e.target.value)}
+                  startContent={<span className="text-default-400">£</span>}
+                  variant="bordered"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Button
+                  color="primary"
+                  onPress={addEntry}
+                  className="w-full"
+                  isDisabled={!date || !amount}
+                >
+                  Add Entry
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+
+          <CardFooter>
+            <small className="text-default-500">
+              CPIH monthly series used to compound inflation between entries.
+            </small>
+          </CardFooter>
+        </Card>
+
+        <Spacer y={1} />
+
+        <Card className="shadow">
+          <CardHeader>
+            <h2 className="text-lg font-medium">Summary</h2>
           </CardHeader>
           <CardBody>
-            <p className="text-default-600">
-              Track how your salary changes compare to UK inflation rates (CPIH)
-            </p>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-4 bg-default-100 rounded">
+                <div className="text-sm text-default-600">Entries</div>
+                <div className="text-xl font-bold">{entries.length}</div>
+              </div>
+              <div className="p-4 bg-default-100 rounded">
+                <div className="text-sm text-default-600">
+                  Overall Nominal Change
+                </div>
+                {entries.length >= 2 ? (
+                  (() => {
+                    const sorted = [...entries].sort((a, b) =>
+                      a.date.localeCompare(b.date)
+                    )
+                    const first = sorted[0].amount
+                    const last = sorted[sorted.length - 1].amount
+                    const pct = ((last - first) / first) * 100
+                    return (
+                      <div className="text-xl font-bold">{pct.toFixed(2)}%</div>
+                    )
+                  })()
+                ) : (
+                  <div className="text-xl font-bold">—</div>
+                )}
+              </div>
+              <div className="p-4 bg-default-100 rounded">
+                <div className="text-sm text-default-600">
+                  Overall Real vs Inflation
+                </div>
+                {entries.length >= 2 ? (
+                  (() => {
+                    const sorted = [...entries].sort((a, b) =>
+                      a.date.localeCompare(b.date)
+                    )
+                    // compute cumulative inflation from first.date to last.date
+                    const mult = compoundInflation(
+                      sorted[0].date,
+                      sorted[sorted.length - 1].date
+                    )
+                    const inflationMatched = sorted[0].amount * mult
+                    const last = sorted[sorted.length - 1].amount
+                    const realPct =
+                      ((last - inflationMatched) / inflationMatched) * 100
+                    return (
+                      <div className="text-xl font-bold">
+                        {realPct >= 0 ? '+' : ''}
+                        {realPct.toFixed(2)}%
+                      </div>
+                    )
+                  })()
+                ) : (
+                  <div className="text-xl font-bold">—</div>
+                )}
+              </div>
+            </div>
           </CardBody>
         </Card>
 
-        <Spacer y={2} />
+        <Spacer y={1} />
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <h2 className="text-xl font-semibold">Add Salary Entry</h2>
-            </CardHeader>
-            <CardBody className="space-y-4">
-              <Input
-                type="month"
-                label="Month & Year"
-                placeholder="YYYY-MM"
-                pattern="[0-9]{4}-[0-9]{2}"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                variant="bordered"
-              />
-              <Input
-                type="text"
-                label="Salary Amount"
-                placeholder="9001"
-                pattern="[0-9]+"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-small">£</span>
-                  </div>
-                }
-                variant="bordered"
-              />
-              <Button
-                color="primary"
-                size="lg"
-                onPress={addSalary}
-                className="w-full"
-                isDisabled={!date || !amount}
-              >
-                Add Salary
-              </Button>
-            </CardBody>
-          </Card>
-
-          <Card className="shadow-lg">
-            <CardHeader>
-              <h2 className="text-xl font-semibold">Summary</h2>
-            </CardHeader>
-            <CardBody>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-default-600">Total Entries</span>
-                  <span className="text-2xl font-bold">{salaries.length}</span>
-                </div>
-                <Divider />
-                <div className="flex justify-between items-center">
-                  <span className="text-default-600">Average Real Change</span>
-                  <Chip
-                    color={
-                      salaries.length === 0
-                        ? 'default'
-                        : salaries.reduce((acc, s) => acc + s.difference, 0) /
-                              salaries.length >
-                            0
-                          ? 'success'
-                          : 'danger'
-                    }
-                    variant="flat"
-                  >
-                    {salaries.length === 0
-                      ? 'N/A'
-                      : `${(
-                          salaries.reduce((acc, s) => acc + s.difference, 0) /
-                          salaries.length
-                        ).toFixed(2)}%`}
-                  </Chip>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-
-        <Spacer y={2} />
-
-        <Card className="shadow-lg">
+        <Card className="shadow">
           <CardHeader>
-            <h2 className="text-xl font-semibold">Salary History</h2>
+            <h2 className="text-lg font-medium">Salary History</h2>
           </CardHeader>
           <CardBody>
-            {salaries.length > 0 ? (
+            {rows.length === 0 ? (
+              <div className="text-center py-12 text-default-400">
+                No entries yet
+              </div>
+            ) : (
               <Table aria-label="Salary history table" removeWrapper>
                 <TableHeader>
                   <TableColumn>DATE</TableColumn>
-                  <TableColumn>ACTUAL SALARY</TableColumn>
-                  <TableColumn>INFLATION ADJUSTED</TableColumn>
-                  <TableColumn>REAL CHANGE</TableColumn>
+                  <TableColumn>ACTUAL</TableColumn>
+                  <TableColumn>% vs Prev</TableColumn>
+                  <TableColumn>Inflation over period</TableColumn>
+                  <TableColumn>Inflation‑matched</TableColumn>
+                  <TableColumn>% vs Inflation</TableColumn>
                   <TableColumn>ACTIONS</TableColumn>
                 </TableHeader>
                 <TableBody>
-                  {salaries.map((salary) => (
-                    <TableRow key={salary.id}>
-                      <TableCell>{formatDate(salary.date)}</TableCell>
+                  {rows.map((r, idx) => (
+                    <TableRow key={r.id}>
+                      <TableCell>{r.date}</TableCell>
                       <TableCell className="font-semibold">
-                        {formatCurrency(salary.amount)}
+                        {formatCurrency(r.amount)}
                       </TableCell>
                       <TableCell>
-                        {formatCurrency(salary.inflationAdjusted)}
+                        {idx === 0 ? '—' : formatPct(r.prevPct)}
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          color={salary.difference > 0 ? 'success' : 'danger'}
-                          variant="flat"
-                          size="sm"
-                        >
-                          {salary.difference > 0 ? '+' : ''}
-                          {salary.difference.toFixed(2)}%
-                        </Chip>
+                        {idx === 0 ? '—' : `${r.inflationPct?.toFixed(2)}%`}
+                      </TableCell>
+                      <TableCell>
+                        {idx === 0 ? '—' : formatCurrency(r.inflationMatched)}
+                      </TableCell>
+                      <TableCell>
+                        {idx === 0 ? (
+                          '—'
+                        ) : (
+                          <Chip
+                            color={(r.realPct ?? 0) >= 0 ? 'success' : 'danger'}
+                            variant="flat"
+                            size="sm"
+                          >
+                            {formatPct(r.realPct)}
+                          </Chip>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -299,7 +327,7 @@ export default function SalaryInflationPage() {
                           color="danger"
                           variant="light"
                           size="sm"
-                          onPress={() => removeSalary(salary.id)}
+                          onPress={() => removeEntry(r.id)}
                         >
                           ✕
                         </Button>
@@ -308,24 +336,21 @@ export default function SalaryInflationPage() {
                   ))}
                 </TableBody>
               </Table>
-            ) : (
-              <div className="text-center py-12 text-default-400">
-                No salary entries yet. Add your first salary above.
-              </div>
             )}
           </CardBody>
         </Card>
 
-        <Spacer y={2} />
+        <Spacer y={1} />
 
-        <Card className="shadow-lg">
+        <Card className="shadow">
           <CardHeader>
-            <h2 className="text-xl font-semibold">Visualization</h2>
+            <h2 className="text-lg font-medium">Visualization</h2>
           </CardHeader>
           <CardBody>
             <div className="h-64 bg-default-100 rounded-lg flex items-center justify-center">
               <p className="text-default-400">
-                Chart placeholder - Salary vs Inflation over time
+                Chart placeholder — plug in chart library and feed (date,
+                actual, inflationMatched)
               </p>
             </div>
           </CardBody>
