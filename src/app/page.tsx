@@ -157,6 +157,33 @@ export default function SalaryInflationPage() {
   const formatPct = (v?: number) =>
     v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
 
+  // TODO useMemo and optimise
+  // TODO explainer
+  let overallNominalChange = '-'
+  if (entries.length >= 2) {
+    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+    const first = sorted[0].amount
+    const last = sorted[sorted.length - 1].amount
+    const pct = ((last - first) / first) * 100
+    overallNominalChange = `${pct.toFixed(2)}%`
+  }
+
+  // TODO red/green
+  // TODO is this correct
+  let overallRealVsInflation = '-'
+  if (entries.length >= 2) {
+    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+    // compute cumulative inflation from first.date to last.date
+    const mult = compoundInflation(
+      sorted[0].date,
+      sorted[sorted.length - 1].date
+    )
+    const inflationMatched = sorted[0].amount * mult
+    const last = sorted[sorted.length - 1].amount
+    const realPct = ((last - inflationMatched) / inflationMatched) * 100
+    overallRealVsInflation = `${realPct >= 0 ? '+' : ''}${realPct.toFixed(2)}%`
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -227,50 +254,15 @@ export default function SalaryInflationPage() {
                 <div className="text-sm text-default-600">
                   Overall Nominal Change
                 </div>
-                {entries.length >= 2 ? (
-                  (() => {
-                    const sorted = [...entries].sort((a, b) =>
-                      a.date.localeCompare(b.date)
-                    )
-                    const first = sorted[0].amount
-                    const last = sorted[sorted.length - 1].amount
-                    const pct = ((last - first) / first) * 100
-                    return (
-                      <div className="text-xl font-bold">{pct.toFixed(2)}%</div>
-                    )
-                  })()
-                ) : (
-                  <div className="text-xl font-bold">—</div>
-                )}
+                <div className="text-xl font-bold">{overallNominalChange}</div>
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">
                   Overall Real vs Inflation
                 </div>
-                {entries.length >= 2 ? (
-                  (() => {
-                    const sorted = [...entries].sort((a, b) =>
-                      a.date.localeCompare(b.date)
-                    )
-                    // compute cumulative inflation from first.date to last.date
-                    const mult = compoundInflation(
-                      sorted[0].date,
-                      sorted[sorted.length - 1].date
-                    )
-                    const inflationMatched = sorted[0].amount * mult
-                    const last = sorted[sorted.length - 1].amount
-                    const realPct =
-                      ((last - inflationMatched) / inflationMatched) * 100
-                    return (
-                      <div className="text-xl font-bold">
-                        {realPct >= 0 ? '+' : ''}
-                        {realPct.toFixed(2)}%
-                      </div>
-                    )
-                  })()
-                ) : (
-                  <div className="text-xl font-bold">—</div>
-                )}
+                <div className="text-xl font-bold">
+                  {overallRealVsInflation}
+                </div>
               </div>
             </div>
           </CardBody>
