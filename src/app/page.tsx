@@ -222,7 +222,6 @@ export default function SalaryInflationPage() {
             <ul className="list-disc list-inside ">
               {[
                 '"if you got a raise today" list item for what you should be getting, compare to the ons widget',
-                'month picker',
                 'check the maths',
                 'Input salary or hourly wage + hours/week',
                 'salary £ misaligned',
@@ -238,10 +237,7 @@ export default function SalaryInflationPage() {
 
         <Card className="shadow-lg">
           <CardHeader className="flex-col">
-            <h1 className="text-2xl font-semibold">Salary vs CPIH</h1>
-            <p className="text-sm text-default-600">
-              Enter month and salary; compares nominal change to inflation.
-            </p>
+            <h1 className="text-2xl font-semibold">Salary vs Inflation</h1>
           </CardHeader>
 
           <CardBody>
@@ -293,12 +289,6 @@ export default function SalaryInflationPage() {
               </div>
             </div>
           </CardBody>
-
-          <CardFooter>
-            <small className="text-default-500">
-              CPIH monthly series used to compound inflation between entries.
-            </small>
-          </CardFooter>
         </Card>
 
         <Spacer y={1} />
@@ -352,7 +342,7 @@ export default function SalaryInflationPage() {
                     }
                     showArrow={true}
                   >
-                    <span className="text-default-500">(?)</span>
+                    <span className="text-default-500">🛈</span>
                   </Tooltip>
                 </div>
               </div>
@@ -386,7 +376,7 @@ export default function SalaryInflationPage() {
                     }
                     showArrow={true}
                   >
-                    Inflation‑matched Salary (?)
+                    Inflation‑matched Salary 🛈
                   </Tooltip>
                 </TableColumn>
                 <TableColumn>
@@ -396,13 +386,16 @@ export default function SalaryInflationPage() {
                         <div className="text-small">
                           How your new salary compares to the inflation-matched
                           value.
+                          <br />
+                          This is the "real" spending power change in your
+                          salary.
                           <br /> Negative values are a <strong>PAY CUT</strong>.
                         </div>
                       </div>
                     }
                     showArrow={true}
                   >
-                    Salary vs Inflation (?)
+                    Salary vs Inflation 🛈
                   </Tooltip>
                 </TableColumn>
                 <TableColumn hideHeader>Actions</TableColumn>
