@@ -187,6 +187,29 @@ export default function SalaryInflationPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
+        <Card className="shadow">
+          <CardHeader className="flex-col">
+            <h1 className="text-2xl font-semibold">TODO</h1>
+          </CardHeader>
+
+          <CardBody>
+            <ul className="list-disc list-inside ">
+              {[
+                '"if you got a raise today" list item for what you should be getting, compare to the ons widget',
+                'month picker',
+                'check the maths',
+                'Input salary or hourly wage + hours/week',
+                'salary £ misaligned',
+                'inflation metric selector'
+              ].map((item, i) => (
+                <li key={`${i}`}>{item}</li>
+              ))}
+            </ul>
+          </CardBody>
+        </Card>
+
+        <Spacer y={1} />
+
         <Card className="shadow-lg">
           <CardHeader className="flex-col">
             <h1 className="text-2xl font-semibold">Salary vs CPIH</h1>
