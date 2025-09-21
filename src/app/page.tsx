@@ -16,7 +16,9 @@ import {
   TableCell,
   Chip,
   Spacer,
-  Tooltip
+  Tooltip,
+  Select,
+  SelectItem
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -84,6 +86,26 @@ const compoundInflation = (startYM: string, endYM: string) => {
   return multiplier
 }
 
+const months = [
+  { key: '01', label: 'January' },
+  { key: '02', label: 'February' },
+  { key: '03', label: 'March' },
+  { key: '04', label: 'April' },
+  { key: '05', label: 'May' },
+  { key: '06', label: 'June' },
+  { key: '07', label: 'July' },
+  { key: '08', label: 'August' },
+  { key: '09', label: 'September' },
+  { key: '10', label: 'October' },
+  { key: '11', label: 'November' },
+  { key: '12', label: 'December' }
+]
+
+const MIN_YEAR = 2015
+const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
+  .fill(0)
+  .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
+
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
     { id: uuidv4(), date: '2016-07', amount: 15392 },
@@ -99,7 +121,8 @@ export default function SalaryInflationPage() {
     { id: uuidv4(), date: '2024-01', amount: 78187.5 },
     { id: uuidv4(), date: '2025-02', amount: 83000 }
   ])
-  const [date, setDate] = useState('')
+  const [inputMonth, setInputMonth] = useState('')
+  const [inputYear, setInputYear] = useState('')
   const [amount, setAmount] = useState('')
 
   // derive table rows with comparisons vs previous
@@ -131,15 +154,17 @@ export default function SalaryInflationPage() {
   }, [entries])
 
   const addEntry = () => {
-    if (!date || !amount) return
+    if (!inputMonth || !inputYear || !amount) return
     const amt = Number(amount.replace(/[,£\s]/g, ''))
     if (Number.isNaN(amt) || amt <= 0) return
+    const date = `${inputYear}-${inputMonth}`
     setEntries((s) =>
       [...s, { id: uuidv4(), date: monthKey(date), amount: amt }].sort((a, b) =>
         a.date.localeCompare(b.date)
       )
     )
-    setDate('')
+    setInputMonth('')
+    setInputYear('')
     setAmount('')
   }
 
@@ -220,15 +245,29 @@ export default function SalaryInflationPage() {
 
           <CardBody>
             <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Input
-                  type="month"
-                  label="Month & Year"
-                  placeholder="YYYY-MM"
-                  value={date}
-                  onChange={(e: any) => setDate(e.target.value)}
-                  variant="bordered"
-                />
+              <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                <Select
+                  className="max-w-xs"
+                  label="Month"
+                  placeholder="-- Select Month --"
+                  value={inputMonth}
+                  onChange={(e) => setInputMonth(e.target.value)}
+                >
+                  {months.map((month) => (
+                    <SelectItem key={month.key}>{month.label}</SelectItem>
+                  ))}
+                </Select>
+                <Select
+                  className="max-w-xs"
+                  label="Year"
+                  placeholder="-- Select Year --"
+                  value={inputYear}
+                  onChange={(e) => setInputYear(e.target.value)}
+                >
+                  {years.map((years) => (
+                    <SelectItem key={years.key}>{years.label}</SelectItem>
+                  ))}
+                </Select>
               </div>
               <div>
                 <Input
@@ -246,7 +285,7 @@ export default function SalaryInflationPage() {
                   color="primary"
                   onPress={addEntry}
                   className="w-full"
-                  isDisabled={!date || !amount}
+                  isDisabled={!inputMonth || !inputYear || !amount}
                 >
                   Add Entry
                 </Button>
@@ -272,6 +311,10 @@ export default function SalaryInflationPage() {
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">Entries</div>
                 <div className="text-xl font-bold">{entries.length}</div>
+              </div>
+              <div className="p-4 bg-default-100 rounded">
+                <div className="text-sm text-default-600">Time period</div>
+                <div className="text-xl font-bold">{entries.length} years TODO</div>
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">
