@@ -18,7 +18,8 @@ import {
   Spacer,
   Tooltip,
   Select,
-  SelectItem
+  SelectItem,
+  Divider
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -314,7 +315,9 @@ export default function SalaryInflationPage() {
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">Time period</div>
-                <div className="text-xl font-bold">{entries.length} years TODO</div>
+                <div className="text-xl font-bold">
+                  {entries.length} years TODO
+                </div>
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">
@@ -328,6 +331,29 @@ export default function SalaryInflationPage() {
                 </div>
                 <div className="text-xl font-bold">
                   {overallRealVsInflation}
+                </div>
+              </div>
+              <div className="p-4 bg-default-100 rounded flex items-center">
+                <div className="flex-1">
+                  <div className="text-sm text-default-600">
+                    Average Pay Rise Over Period
+                  </div>
+                  <div className="text-xl font-bold">+420.69%</div>
+                </div>
+                <div className="ml-3 w-6 flex items-center justify-center">
+                  <Tooltip
+                    content={
+                      <div className="px-1 py-2">
+                        <div className="text-small">
+                          The cumulative average increase in pay over the UK
+                          pro-rated to the time period you’ve provided.
+                        </div>
+                      </div>
+                    }
+                    showArrow={true}
+                  >
+                    <span className="text-default-500">(?)</span>
+                  </Tooltip>
                 </div>
               </div>
             </div>
@@ -441,6 +467,69 @@ export default function SalaryInflationPage() {
                 actual, inflationMatched)
               </p>
             </div>
+          </CardBody>
+        </Card>
+
+        <Divider />
+
+        <Card className="shadow">
+          <CardHeader className="flex-col">
+            <h1 className="text-2xl font-semibold">DISCLAIMER</h1>
+          </CardHeader>
+
+          <CardBody className="space-y-2">
+            <p className="text-sm text-default-600">
+              This tool provides illustrative, approximate comparisons between
+              your nominal salary changes and UK inflation. Results are
+              indicative only.
+            </p>
+
+            <ul className="list-disc ml-5 text-sm text-default-600">
+              <li>
+                Variation: Calculations use monthly CPIH/CPI/OOH year‑on‑year
+                rates converted to monthly multipliers and compounded between
+                the selected months - different methods (e.g. interpolating
+                daily rates, or using alternative indexing) will produce
+                different results.
+              </li>
+              <li>
+                Data sources: CPIH/CPI/OOH monthly rates should be obtained from
+                the UK Office for National Statistics (ONS).
+                <div className="mt-1 space-y-1">
+                  <a
+                    className="text-primary-600"
+                    href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ONS - Consumer price inflation (CPIH & CPI & OOH) bulletin
+                  </a>
+                  <br />
+                  <a
+                    className="text-primary-600"
+                    href="https://www.ons.gov.uk/methodology/classificationsandstandards/measuringinflation"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ONS - Measuring inflation (methodology)
+                  </a>
+                </div>
+              </li>
+              <li>
+                Anonymity & handling: None of your salary information leaves
+                your browser. If you choose to screenshot or download a copy of
+                the page, then it only exists with you.
+              </li>
+              <li>
+                This is not financial, tax, or employment advice. For important
+                decisions, consult a qualified professional.
+              </li>
+            </ul>
+
+            <p className="text-sm text-default-600">
+              Average pay rise figures are from TODO SOURCE and vary wildly
+              depending on your industry and specific job role.
+            </p>
           </CardBody>
         </Card>
       </div>
