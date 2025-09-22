@@ -197,7 +197,7 @@ export default function SalaryInflationPage() {
         }).format(v)
 
   const formatPct = (v?: number) =>
-    v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
+    v == null ? '—' : `${v === 0 ? '±' : v >= 0 ? '+' : ''}${v.toFixed(2)}%`
 
   const overallNominalChange = useMemo(() => {
     if (entries.length < 2) {
@@ -524,7 +524,13 @@ export default function SalaryInflationPage() {
                         '—'
                       ) : (
                         <Chip
-                          color={(r.realPct ?? 0) >= 0 ? 'success' : 'danger'}
+                          color={
+                            (r.realPct ?? 0) === 0
+                              ? 'default'
+                              : (r.realPct ?? 0) >= 0
+                                ? 'success'
+                                : 'danger'
+                          }
                           variant="flat"
                           size="sm"
                         >
