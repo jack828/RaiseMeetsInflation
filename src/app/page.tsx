@@ -170,7 +170,9 @@ export default function SalaryInflationPage() {
     if (Number.isNaN(amt) || amt <= 0) return
     const date = `${inputYear}-${inputMonth}`
     setEntries((s) =>
-      [...s, toSalaryEntry(date, amt)].sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
+      [...s, toSalaryEntry(date, amt)].sort(
+        (a, b) => a.datetime.getTime() - b.datetime.getTime()
+      )
     )
     setInputMonth('')
     setInputYear('')
@@ -217,6 +219,27 @@ export default function SalaryInflationPage() {
     const realPct = ((last - inflationMatched) / inflationMatched) * 100
     overallRealVsInflation = `${realPct >= 0 ? '+' : ''}${realPct.toFixed(2)}%`
   }
+
+  const timePeriod = useMemo(() => {
+    if (entries.length < 2) {
+      return '-'
+    }
+    const d = intervalToDuration({
+      start: entries[0].datetime,
+      end: entries[entries.length - 1].datetime
+    })
+    let str = ''
+    if (d.years) {
+      str += d.years === 1 ? '1 year' : `${d.years} years`
+    }
+    if (d.months) {
+      if (d.years) {
+        str += ' '
+      }
+      str += d.months === 1 ? '1 month' : `${d.months} months`
+    }
+    return str
+  }, [entries])
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
@@ -308,16 +331,10 @@ export default function SalaryInflationPage() {
             <h2 className="text-lg font-medium">Summary</h2>
           </CardHeader>
           <CardBody>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 bg-default-100 rounded">
-                <div className="text-sm text-default-600">Entries</div>
-                <div className="text-xl font-bold">{entries.length}</div>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">Time period</div>
-                <div className="text-xl font-bold">
-                  {entries.length} years TODO
-                </div>
+                <div className="text-xl font-bold">{timePeriod}</div>
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">
