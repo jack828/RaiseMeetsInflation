@@ -199,35 +199,37 @@ export default function SalaryInflationPage() {
   const formatPct = (v?: number) =>
     v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
 
-  // TODO useMemo and optimise
-  // TODO explainer
-  let overallNominalChange = 0
-  if (entries.length >= 2) {
+  const overallNominalChange = useMemo(() => {
+    if (entries.length < 2) {
+      return 0
+    }
+
     const first = entries[0].amount
     const last = entries[entries.length - 1].amount
     const pct = ((last - first) / first) * 100
-    overallNominalChange = pct
-  }
+    return pct
+  }, [entries])
 
-  // TODO red/green
-  // TODO is this correct
-  let overallRealVsInflation = 0
-  let overallInflation = '-'
-  let exampleInflationValue = '1.00'
-  if (entries.length >= 2) {
-    // compute cumulative inflation from first.date to last.date
-    const inflation = compoundInflation(
-      entries[0].date,
-      entries[entries.length - 1].date
-    )
-    const inflationMatched = entries[0].amount * inflation
-    const last = entries[entries.length - 1].amount
-    const realPct = ((last - inflationMatched) / inflationMatched) * 100
-    overallRealVsInflation = realPct
+  const [overallRealVsInflation, overallInflation, exampleInflationValue] =
+    useMemo(() => {
+      if (entries.length < 2) {
+        return [0, '-', '1.00']
+      }
 
-    overallInflation = formatPct((inflation - 1) * 100)
-    exampleInflationValue = (1 * inflation).toFixed(2)
-  }
+      const inflation = compoundInflation(
+        entries[0].date,
+        entries[entries.length - 1].date
+      )
+      const inflationMatched = entries[0].amount * inflation
+      const last = entries[entries.length - 1].amount
+      const realPct = ((last - inflationMatched) / inflationMatched) * 100
+
+      return [
+        realPct,
+        formatPct((inflation - 1) * 100),
+        (1 * inflation).toFixed(2)
+      ]
+    }, [entries])
 
   const timePeriod = useMemo(() => {
     if (entries.length < 2) {
