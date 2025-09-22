@@ -5,7 +5,6 @@ import {
   Card,
   CardHeader,
   CardBody,
-  Input,
   Button,
   Table,
   TableHeader,
@@ -16,8 +15,6 @@ import {
   Chip,
   Spacer,
   Tooltip,
-  Select,
-  SelectItem,
   Divider,
   CardFooter
 } from '@heroui/react'
@@ -28,45 +25,15 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline'
 
-import { compoundMultiplier, multiplierToPct, toSalaryEntry } from '@/lib'
+import { compoundMultiplier, multiplierToPct, SalaryEntry, toSalaryEntry } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { NextRaiseCard } from '@/components/next-raise-card'
 import { trendIcon } from '@/components/trend-icon'
-
-export interface SalaryEntry {
-  id: string
-  date: string // "YYYY-MM"
-  datetime: Date
-  amount: number
-  prevPct?: number // % difference vs previous nominal
-  inflationMatched?: number // what previous salary would need to be to match inflation to this date
-  inflationPct?: number // % inflation over period from previous to this date
-  realPct?: number // % difference of this salary vs inflation-matched amount
-}
+import { SalaryInputCard } from '@/components/salary-input-card'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
-
-const months = [
-  { key: '01', label: 'January' },
-  { key: '02', label: 'February' },
-  { key: '03', label: 'March' },
-  { key: '04', label: 'April' },
-  { key: '05', label: 'May' },
-  { key: '06', label: 'June' },
-  { key: '07', label: 'July' },
-  { key: '08', label: 'August' },
-  { key: '09', label: 'September' },
-  { key: '10', label: 'October' },
-  { key: '11', label: 'November' },
-  { key: '12', label: 'December' }
-]
-
-const MIN_YEAR = 2015
-const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
-  .fill(0)
-  .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
 
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
@@ -83,9 +50,6 @@ export default function SalaryInflationPage() {
     toSalaryEntry('2024-01', 78187.5),
     toSalaryEntry('2025-02', 83000)
   ])
-  const [inputMonth, setInputMonth] = useState('')
-  const [inputYear, setInputYear] = useState('')
-  const [amount, setAmount] = useState('')
 
   // derive table rows with comparisons vs previous
   const rows = useMemo(() => {
@@ -118,19 +82,12 @@ export default function SalaryInflationPage() {
     })
   }, [entries])
 
-  const addEntry = () => {
-    if (!inputMonth || !inputYear || !amount) return
-    const amt = Number(amount.replace(/[,£\s]/g, ''))
-    if (Number.isNaN(amt) || amt <= 0) return
-    const date = `${inputYear}-${inputMonth}`
+  const onAddSalary = (entry: SalaryEntry) => {
     setEntries((s) =>
-      [...s, toSalaryEntry(date, amt)].sort(
-        (a, b) => a.datetime.getTime() - b.datetime.getTime()
-      )
+      s
+        .concat(entry)
+        .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
     )
-    setInputMonth('')
-    setInputYear('')
-    setAmount('')
   }
 
   const removeEntry = (id: string) =>
@@ -206,6 +163,8 @@ export default function SalaryInflationPage() {
                 'Input salary or hourly wage + hours/week',
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'inflation metric selector',
+                'mobile layout',
+                'graph',
                 'smart quotes',
                 'ko-fi',
                 'ads'
@@ -244,65 +203,7 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <h1 className="text-2xl font-semibold">Salary vs Inflation</h1>
-          </CardHeader>
-
-          <CardBody>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                <Select
-                  className="max-w-xs"
-                  label="Month"
-                  placeholder="-- Select Month --"
-                  value={inputMonth}
-                  onChange={(e) => setInputMonth(e.target.value)}
-                >
-                  {months.map((month) => (
-                    <SelectItem key={month.key}>{month.label}</SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  className="max-w-xs"
-                  label="Year"
-                  placeholder="-- Select Year --"
-                  value={inputYear}
-                  onChange={(e) => setInputYear(e.target.value)}
-                >
-                  {years.map((years) => (
-                    <SelectItem key={years.key}>{years.label}</SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div>
-                <Input
-                  type="text"
-                  label="Salary"
-                  placeholder="9001"
-                  value={amount}
-                  onChange={(e: any) => setAmount(e.target.value)}
-                  startContent={
-                    <div className="pointer-events-none flex items-center">
-                      <span className="text-default-400 text-small">£</span>
-                    </div>
-                  }
-                  variant="bordered"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Button
-                  color="primary"
-                  onPress={addEntry}
-                  className="w-full"
-                  isDisabled={!inputMonth || !inputYear || !amount}
-                >
-                  Add Entry
-                </Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
+        <SalaryInputCard handleAddSalary={onAddSalary} />
 
         <Spacer y={1} />
 

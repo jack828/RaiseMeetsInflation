@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { add, parse } from 'date-fns'
-import { InflationDataEntry, SalaryEntry } from './app/page'
+import { InflationDataEntry } from './app/page'
 
 // TODO refactor out
 const monthKey = (isoMonth: string): InflationDataEntry =>
@@ -33,6 +33,17 @@ export const compoundMultiplier = (
     if (multiplier > 1e6 || current.getTime() > now.getTime()) break
   }
   return multiplier
+}
+
+export interface SalaryEntry {
+  id: string
+  date: string // "YYYY-MM"
+  datetime: Date
+  amount: number
+  prevPct?: number // % difference vs previous nominal
+  inflationMatched?: number // what previous salary would need to be to match inflation to this date
+  inflationPct?: number // % inflation over period from previous to this date
+  realPct?: number // % difference of this salary vs inflation-matched amount
 }
 
 export const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({

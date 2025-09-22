@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { Card, CardHeader, CardBody, CardFooter } from '@heroui/react'
 
-import { compoundMultiplier, multiplierToPct } from '@/lib'
+import { compoundMultiplier, multiplierToPct, SalaryEntry } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
-import { InflationType, SalaryEntry } from '@/app/page'
+import { InflationType } from '@/app/page'
 import { trendIcon } from './trend-icon'
 
 interface NextRaiseCardProps {
