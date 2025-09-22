@@ -5,7 +5,6 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Input,
   Button,
   Table,
@@ -22,16 +21,7 @@ import {
   Divider
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
-
-interface SalaryEntry {
-  id: string
-  date: string // "YYYY-MM"
-  amount: number
-  prevPct?: number // % difference vs previous nominal
-  inflationMatched?: number // what previous salary would need to be to match inflation to this date
-  inflationPct?: number // % inflation over period from previous to this date
-  realPct?: number // % difference of this salary vs inflation-matched amount
-}
+import { intervalToDuration, parse } from 'date-fns'
 
 import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
 /*TODO FIXME some dates missing or inaccurate.
@@ -47,6 +37,17 @@ import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
     ooh: Number(r[3])
   }))
   .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
+
+interface SalaryEntry {
+  id: string
+  date: string // "YYYY-MM"
+  datetime: Date
+  amount: number
+  prevPct?: number // % difference vs previous nominal
+  inflationMatched?: number // what previous salary would need to be to match inflation to this date
+  inflationPct?: number // % inflation over period from previous to this date
+  realPct?: number // % difference of this salary vs inflation-matched amount
+}
 
 type InflationDataEntry = keyof typeof inflationData
 type InflationType = 'cpih' | 'cpi' | 'ooh'
@@ -77,7 +78,10 @@ const compoundInflation = (startYM: string, endYM: string) => {
   while (true) {
     const key = monthKey(current)
     const inflationEntry = inflationData[key]
-    const inflationTypeValue = inflationEntry[inflationType]
+    const inflationTypeValue = inflationEntry?.[inflationType] || 0
+    if (inflationTypeValue === 0) {
+      console.warn('Missing inflation data for', current)
+    }
     multiplier *= monthlyMultiplierFromAnnual(inflationTypeValue || 0)
     if (current === endYM) break
     current = addMonths(current, 1)
@@ -107,20 +111,27 @@ const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
   .fill(0)
   .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
 
+const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
+  id: uuidv4(),
+  date,
+  datetime: parse(date, 'yyyy-MM', new Date()),
+  amount
+})
+
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
-    { id: uuidv4(), date: '2016-07', amount: 15392 },
-    { id: uuidv4(), date: '2016-09', amount: 15392 },
-    { id: uuidv4(), date: '2017-06', amount: 17000 },
-    { id: uuidv4(), date: '2018-08', amount: 24992.76 },
-    { id: uuidv4(), date: '2019-05', amount: 27000 },
-    { id: uuidv4(), date: '2019-06', amount: 29000 },
-    { id: uuidv4(), date: '2021-04', amount: 34000 },
-    { id: uuidv4(), date: '2022-01', amount: 40000 },
-    { id: uuidv4(), date: '2022-06', amount: 50000 },
-    { id: uuidv4(), date: '2023-08', amount: 75000 },
-    { id: uuidv4(), date: '2024-01', amount: 78187.5 },
-    { id: uuidv4(), date: '2025-02', amount: 83000 }
+    toSalaryEntry('2016-07', 15392),
+    toSalaryEntry('2016-09', 15392),
+    toSalaryEntry('2017-06', 17000),
+    toSalaryEntry('2018-08', 24992.76),
+    toSalaryEntry('2019-05', 27000),
+    toSalaryEntry('2019-06', 29000),
+    toSalaryEntry('2021-04', 34000),
+    toSalaryEntry('2022-01', 40000),
+    toSalaryEntry('2022-06', 50000),
+    toSalaryEntry('2023-08', 75000),
+    toSalaryEntry('2024-01', 78187.5),
+    toSalaryEntry('2025-02', 83000)
   ])
   const [inputMonth, setInputMonth] = useState('')
   const [inputYear, setInputYear] = useState('')
@@ -128,8 +139,7 @@ export default function SalaryInflationPage() {
 
   // derive table rows with comparisons vs previous
   const rows = useMemo(() => {
-    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
-    return sorted.map((entry, i, arr) => {
+    return entries.map((entry, i, arr) => {
       if (i === 0) return { ...entry } as SalaryEntry
       const prev = arr[i - 1]
       // nominal % change vs previous
@@ -160,9 +170,7 @@ export default function SalaryInflationPage() {
     if (Number.isNaN(amt) || amt <= 0) return
     const date = `${inputYear}-${inputMonth}`
     setEntries((s) =>
-      [...s, { id: uuidv4(), date: monthKey(date), amount: amt }].sort((a, b) =>
-        a.date.localeCompare(b.date)
-      )
+      [...s, toSalaryEntry(date, amt)].sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
     )
     setInputMonth('')
     setInputYear('')
