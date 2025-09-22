@@ -235,7 +235,7 @@ export default function SalaryInflationPage() {
   const [overallAdjustedChange, overallInflation, exampleInflationValue] =
     useMemo(() => {
       if (entries.length < 2) {
-        return [0, '-', '1.00']
+        return [0, 0, '1.00']
       }
 
       const inflationMultiplier = compoundMultiplier(
@@ -249,7 +249,7 @@ export default function SalaryInflationPage() {
 
       return [
         realPct,
-        formatPct(multiplierToPct(inflationMultiplier)),
+        multiplierToPct(inflationMultiplier),
         (1 * inflationMultiplier).toFixed(2)
       ]
     }, [entries])
@@ -333,6 +333,11 @@ export default function SalaryInflationPage() {
             means the spending power of your pay is going down. In "real" terms,
             that means you're getting a **pay cut**, for doing the exact same
             thing.
+            <br />
+            This site is about finding that longer term trend to better argue
+            with your employer. Has it been long awaited for you to get a boost?
+            Or, are you just curious just how well you've performed by switching
+            jobs?
           </CardBody>
         </Card>
 
@@ -406,8 +411,8 @@ export default function SalaryInflationPage() {
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
-                    inflation has risen by {overallInflation}. This means that
-                    £1 then has the same purchasing power as £
+                    inflation has risen by {formatPct(overallInflation)}. This
+                    means that £1 then has the same purchasing power as £
                     {exampleInflationValue} today.
                   </div>
                 </div>
@@ -495,6 +500,10 @@ export default function SalaryInflationPage() {
                     </div>
                     <div className="text-xl font-bold">
                       {formatPct(averagePayRiseOverPeriod)}
+                    </div>
+                    <div className="text-sm text-default-500">
+                      {formatPct(averagePayRiseOverPeriod - overallInflation)}{' '}
+                      inflation adjusted
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
