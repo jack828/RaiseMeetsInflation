@@ -28,7 +28,8 @@ import {
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
   ArrowTrendingUpIcon,
-  CalendarDateRangeIcon
+  CalendarDateRangeIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 /*TODO FIXME some dates missing or inaccurate.
  parsed = raw
@@ -546,7 +547,7 @@ export default function SalaryInflationPage() {
                         size="sm"
                         onPress={() => removeEntry(r.id)}
                       >
-                        ✕
+                        <TrashIcon className="w-5 h-5" />
                       </Button>
                     </TableCell>
                   </TableRow>
