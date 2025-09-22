@@ -21,8 +21,6 @@ import {
   Divider,
   CardFooter
 } from '@heroui/react'
-import { v4 as uuidv4 } from 'uuid'
-import { add, intervalToDuration, parse } from 'date-fns'
 
 import {
   ArrowDownIcon,
@@ -33,22 +31,11 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline'
 
-import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
-/*TODO FIXME some dates missing or inaccurate.
- parsed = raw
-  .split('\n')
-  .filter(Boolean)
-  .map((l) => l.split(',').map((c) => c.replaceAll('"', '')))
-  .slice(1)
-  .map((r) => ({
-    date: new Date(`01 ${r[0]}`).toISOString().slice(0, 7),
-    cpih: Number(r[1]),
-    cpi: Number(r[2])
-  }))
-  .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
-import payGrowthData from '../data/median-pay-growth.json' assert { type: 'json' }
+import { compoundMultiplier, multiplierToPct, toSalaryEntry } from '@/lib'
+import * as formatters from '@/formatters'
+import * as datasets from '@/datasets'
 
-interface SalaryEntry {
+export interface SalaryEntry {
   id: string
   date: string // "YYYY-MM"
   datetime: Date
@@ -59,43 +46,8 @@ interface SalaryEntry {
   realPct?: number // % difference of this salary vs inflation-matched amount
 }
 
-type InflationDataEntry = keyof typeof inflationData
-type InflationType = 'cpih' | 'cpi'
+export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
-
-type PayGrowthDataEntry = keyof typeof payGrowthData
-
-const monthKey = (isoMonth: string): InflationDataEntry =>
-  isoMonth.slice(0, 7) as InflationDataEntry
-
-// Convert annual figure to monthly multiplier
-// Monthly multiplier = (1 + annual/100)^(1/12)
-const monthlyMultiplierFromAnnual = (annualPct: number) =>
-  Math.pow(1 + annualPct / 100, 1 / 12)
-
-// Compound multiplier from start to end (both inclusive) for a dataset of percentages
-const compoundMultiplier = (
-  start: Date,
-  end: Date,
-  getValue: (key: string) => number
-) => {
-  if (!start || !end) return 1
-  const now = new Date()
-  let current = start
-  let multiplier = 1
-  // include start month and end month
-  while (true) {
-    const key = monthKey(current.toISOString())
-    const value = getValue(key)
-
-    multiplier *= monthlyMultiplierFromAnnual(value || 0)
-    if (current.toISOString() === end.toISOString()) break
-    current = add(current, { months: 1 })
-    // safety to avoid infinite loop
-    if (multiplier > 1e6 || current.getTime() > now.getTime()) break
-  }
-  return multiplier
-}
 
 const months = [
   { key: '01', label: 'January' },
@@ -116,63 +68,6 @@ const MIN_YEAR = 2015
 const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
   .fill(0)
   .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
-
-const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
-  id: uuidv4(),
-  date,
-  datetime: parse(date, 'yyyy-MM', new Date()),
-  amount
-})
-
-const getInflationValue = (key: string, type: string = 'cpih') => {
-  const inflationEntry = inflationData[key as InflationDataEntry]
-  const inflationTypeValue = inflationEntry?.[inflationType] || 0
-  if (inflationTypeValue === 0) {
-    console.warn('Missing inflation data for', key)
-  }
-  return inflationTypeValue
-}
-
-const getPayGrowthValue = (key: string) => {
-  const payGrowthEntry = payGrowthData[key as PayGrowthDataEntry]
-
-  const payGrowthValue = payGrowthEntry?.value || 0
-  if (payGrowthValue === 0) {
-    console.warn('Missing pay growth data for', key)
-  }
-  return payGrowthValue
-}
-
-const multiplierToPct = (multiplier: number): number => (multiplier - 1) * 100
-
-const formatCurrency = (v?: number) =>
-  v == null
-    ? '—'
-    : new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: 'GBP'
-      }).format(v)
-
-const formatPct = (v?: number) =>
-  v == null ? '—' : `${v === 0 ? '±' : v >= 0 ? '+' : ''}${v.toFixed(2)}%`
-
-const formatTimePeriod = (start: Date, end: Date) => {
-  const d = intervalToDuration({
-    start,
-    end
-  })
-  let str = ''
-  if (d.years) {
-    str += d.years === 1 ? '1 year' : `${d.years} years`
-  }
-  if (d.months) {
-    if (d.years) {
-      str += ' '
-    }
-    str += d.months === 1 ? '1 month' : `${d.months} months`
-  }
-  return str
-}
 
 const trendIcon = (v: number) =>
   v === 0 ? (
@@ -214,7 +109,7 @@ export default function SalaryInflationPage() {
       const inflationMultiplier = compoundMultiplier(
         prev.datetime,
         entry.datetime,
-        getInflationValue
+        datasets.getInflationValue(inflationType)
       )
       const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
       const inflationPct = multiplierToPct(inflationMultiplier)
@@ -271,7 +166,7 @@ export default function SalaryInflationPage() {
       const inflationMultiplier = compoundMultiplier(
         entries[0].datetime,
         entries[entries.length - 1].datetime,
-        getInflationValue
+        datasets.getInflationValue(inflationType)
       )
       const inflationMatched = entries[0].amount * inflationMultiplier
       const last = entries[entries.length - 1].amount
@@ -288,7 +183,7 @@ export default function SalaryInflationPage() {
     if (entries.length < 2) {
       return '-'
     }
-    return formatTimePeriod(
+    return formatters.timePeriod(
       entries[0].datetime,
       entries[entries.length - 1].datetime
     )
@@ -302,7 +197,7 @@ export default function SalaryInflationPage() {
     const payGrowthMultiplier = compoundMultiplier(
       entries[0].datetime,
       entries[entries.length - 1].datetime,
-      getPayGrowthValue
+      datasets.getPayGrowthValue
     )
     return multiplierToPct(payGrowthMultiplier)
   }, [entries])
@@ -430,8 +325,8 @@ export default function SalaryInflationPage() {
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
-                    inflation has risen by {formatPct(overallInflation)}. This
-                    means that £1 then has the same purchasing power as £
+                    inflation has risen by {formatters.pct(overallInflation)}.
+                    This means that £1 then has the same purchasing power as £
                     {exampleInflationValue} today.
                   </div>
                 </div>
@@ -458,7 +353,7 @@ export default function SalaryInflationPage() {
                       Overall Nominal Change
                     </div>
                     <div className="text-xl font-bold">
-                      {formatPct(overallNominalChange)}
+                      {formatters.pct(overallNominalChange)}
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
@@ -480,7 +375,7 @@ export default function SalaryInflationPage() {
                       Overall Adjusted Change
                     </div>
                     <div className="text-xl font-bold">
-                      {formatPct(overallAdjustedChange)}
+                      {formatters.pct(overallAdjustedChange)}
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
@@ -505,10 +400,12 @@ export default function SalaryInflationPage() {
                       Average Pay Rise Over Period
                     </div>
                     <div className="text-xl font-bold">
-                      {formatPct(averagePayRiseOverPeriod)}
+                      {formatters.pct(averagePayRiseOverPeriod)}
                     </div>
                     <div className="text-sm text-default-500">
-                      {formatPct(averagePayRiseOverPeriod - overallInflation)}{' '}
+                      {formatters.pct(
+                        averagePayRiseOverPeriod - overallInflation
+                      )}{' '}
                       inflation adjusted
                     </div>
                   </div>
@@ -584,16 +481,18 @@ export default function SalaryInflationPage() {
                   <TableRow key={r.id}>
                     <TableCell>{r.date}</TableCell>
                     <TableCell className="font-semibold">
-                      {formatCurrency(r.amount)}
+                      {formatters.currency(r.amount)}
                     </TableCell>
                     <TableCell>
-                      {idx === 0 ? '—' : formatPct(r.prevPct)}
+                      {idx === 0 ? '—' : formatters.pct(r.prevPct)}
                     </TableCell>
                     <TableCell>
                       {idx === 0 ? '—' : `${r.inflationPct?.toFixed(2)}%`}
                     </TableCell>
                     <TableCell>
-                      {idx === 0 ? '—' : formatCurrency(r.inflationMatched)}
+                      {idx === 0
+                        ? '—'
+                        : formatters.currency(r.inflationMatched)}
                     </TableCell>
                     <TableCell>
                       {idx === 0 ? (
@@ -610,7 +509,7 @@ export default function SalaryInflationPage() {
                           variant="flat"
                           size="sm"
                         >
-                          {formatPct(r.realPct)}
+                          {formatters.pct(r.realPct)}
                         </Chip>
                       )}
                     </TableCell>
@@ -757,12 +656,12 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
     const last = entries[entries.length - 1]
     const lastDate = last.datetime
     const lastAmount = last.amount
-    const timePeriod = formatTimePeriod(lastDate, now)
+    const timePeriod = formatters.timePeriod(lastDate, now)
 
     const inflationMultiplier = compoundMultiplier(
       lastDate,
       now,
-      getInflationValue
+      datasets.getInflationValue(inflationType)
     )
     const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
     const inflationPct = multiplierToPct(inflationMultiplier)
@@ -772,7 +671,7 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
     const payGrowthMultiplier = compoundMultiplier(
       lastDate,
       now,
-      getPayGrowthValue
+      datasets.getPayGrowthValue
     )
     const marketTargetSalary = +(lastAmount * payGrowthMultiplier).toFixed(2)
     const payGrowthPct = multiplierToPct(payGrowthMultiplier)
@@ -817,8 +716,8 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
               <div className="text-md text-default-700">
                 Salary required now to restore the purchasing power of your last
                 recorded pay, given the current inflation of{' '}
-                <strong>{formatPct(data.inflationPct)}</strong> over the last{' '}
-                <strong>{data.timePeriod}</strong> since your last raise.
+                <strong>{formatters.pct(data.inflationPct)}</strong> over the
+                last <strong>{data.timePeriod}</strong> since your last raise.
               </div>
             </div>
             <div className="p-4 bg-default-100 rounded flex items-center">
@@ -827,11 +726,11 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
                   To restore purchasing power
                 </div>
                 <div className="text-xl font-bold">
-                  {formatCurrency(data.inflationTargetSalary)}
+                  {formatters.currency(data.inflationTargetSalary)}
                 </div>
 
                 <div className="text-sm text-default-500">
-                  {formatPct(data.askRestorePct)}
+                  {formatters.pct(data.askRestorePct)}
                 </div>
               </div>
               <div className="ml-3 w-6 flex items-center justify-center">
@@ -845,7 +744,7 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
               <div className="text-md text-default-700">
                 To match the market median growth, this is what you'd need. It's{' '}
                 <strong>
-                  {formatPct(data.payGrowthPct - data.inflationPct)}
+                  {formatters.pct(data.payGrowthPct - data.inflationPct)}
                 </strong>{' '}
                 above the rate of inflation.
               </div>
@@ -856,11 +755,11 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
                   To match the market median growth
                 </div>
                 <div className="text-xl font-bold">
-                  {formatCurrency(data.marketTargetSalary)}
+                  {formatters.currency(data.marketTargetSalary)}
                 </div>
 
                 <div className="text-sm text-default-500">
-                  {formatPct(data.payGrowthPct)}
+                  {formatters.pct(data.payGrowthPct)}
                 </div>
               </div>
               <div className="ml-3 w-6 flex items-center justify-center">
@@ -870,6 +769,13 @@ export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
           </div>
         </div>
       </CardBody>
+      <CardFooter>
+        <p className="text-sm text-default-500">
+          This may be different to other sites, as we look at the inflation
+          since your last wage - not just in the last 12 months. This should be
+          more accurate to what you should get.
+        </p>
+      </CardFooter>
     </Card>
   )
 }
