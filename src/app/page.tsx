@@ -211,7 +211,7 @@ export default function SalaryInflationPage() {
     return pct
   }, [entries])
 
-  const [overallRealVsInflation, overallInflation, exampleInflationValue] =
+  const [overallAdjustedChange, overallInflation, exampleInflationValue] =
     useMemo(() => {
       if (entries.length < 2) {
         return [0, '-', '1.00']
@@ -407,13 +407,13 @@ export default function SalaryInflationPage() {
                       Overall Adjusted Change
                     </div>
                     <div className="text-xl font-bold">
-                      {formatPct(overallRealVsInflation)}
+                      {formatPct(overallAdjustedChange)}
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {overallRealVsInflation === 0 ? (
+                    {overallAdjustedChange === 0 ? (
                       <ArrowLongRightIcon />
-                    ) : overallRealVsInflation > 0 ? (
+                    ) : overallAdjustedChange > 0 ? (
                       <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
                     ) : (
                       <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
@@ -440,9 +440,9 @@ export default function SalaryInflationPage() {
                     <div className="text-xl font-bold">+420.69%</div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {overallRealVsInflation === 0 ? (
+                    {overallAdjustedChange === 0 ? (
                       <ArrowLongRightIcon />
-                    ) : overallRealVsInflation > 0 ? (
+                    ) : overallAdjustedChange > 0 ? (
                       <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
                     ) : (
                       <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
