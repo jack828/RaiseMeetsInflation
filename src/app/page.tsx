@@ -21,9 +21,8 @@ import {
   Divider
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
-import { intervalToDuration, parse } from 'date-fns'
+import { add, intervalToDuration, parse } from 'date-fns'
 
-import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
 import {
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
@@ -31,6 +30,8 @@ import {
   CalendarDateRangeIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
+
+import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
 /*TODO FIXME some dates missing or inaccurate.
  parsed = raw
   .split('\n')
@@ -43,6 +44,7 @@ import {
     cpi: Number(r[2])
   }))
   .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
+import payGrowthData from '../data/median-pay-growth.json' assert { type: 'json' }
 
 interface SalaryEntry {
   id: string
@@ -59,38 +61,33 @@ type InflationDataEntry = keyof typeof inflationData
 type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
 
+type PayGrowthDataEntry = keyof typeof payGrowthData
+
 const monthKey = (isoMonth: string): InflationDataEntry =>
   isoMonth.slice(0, 7) as InflationDataEntry
-const addMonths = (ym: string, n = 1) => {
-  const [y, m] = ym.split('-').map(Number)
-  const d = new Date(y, m - 1 + n, 1)
-  return `${d.getFullYear().toString().padStart(4, '0')}-${(d.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}`
-}
 
-// Convert annual CPIH % (year-on-year) to monthly multiplier for that month.
-// If cpih is the annual rate (e.g. 3.0), monthly multiplier = (1 + cpih/100)^(1/12)
+// Convert annual figure to monthly multiplier
+// Monthly multiplier = (1 + annual/100)^(1/12)
 const monthlyMultiplierFromAnnual = (annualPct: number) =>
   Math.pow(1 + annualPct / 100, 1 / 12)
 
-// Compound inflation multiplier from start (inclusive) to end (inclusive previous month).
-// Example: start "2023-08" -> end "2024-01" will compound months Aug2023..Jan2024 inclusive.
-const compoundInflation = (startYM: string, endYM: string) => {
-  if (!startYM || !endYM) return 1
-  let current = startYM
+// Compound multiplier from start to end (both inclusive) for a dataset of percentages
+const compoundMultiplier = (
+  start: Date,
+  end: Date,
+  getValue: (key: string) => number
+) => {
+  if (!start || !end) return 1
+  let current = start
   let multiplier = 1
   // include start month and end month
   while (true) {
-    const key = monthKey(current)
-    const inflationEntry = inflationData[key]
-    const inflationTypeValue = inflationEntry?.[inflationType] || 0
-    if (inflationTypeValue === 0) {
-      console.warn('Missing inflation data for', current)
-    }
-    multiplier *= monthlyMultiplierFromAnnual(inflationTypeValue || 0)
-    if (current === endYM) break
-    current = addMonths(current, 1)
+    const key = monthKey(current.toISOString())
+    const value = getValue(key)
+
+    multiplier *= monthlyMultiplierFromAnnual(value || 0)
+    if (current.toISOString() === end.toISOString()) break
+    current = add(current, { months: 1 })
     // safety to avoid infinite loop
     if (multiplier > 1e6) break
   }
@@ -124,6 +121,27 @@ const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
   amount
 })
 
+const getInflationValue = (key: string, type: string = 'cpih') => {
+  const inflationEntry = inflationData[key as InflationDataEntry]
+  const inflationTypeValue = inflationEntry?.[inflationType] || 0
+  if (inflationTypeValue === 0) {
+    console.warn('Missing inflation data for', key)
+  }
+  return inflationTypeValue
+}
+
+const getPayGrowthValue = (key: string) => {
+  const payGrowthEntry = payGrowthData[key as PayGrowthDataEntry]
+
+  const payGrowthValue = payGrowthEntry?.value || 0
+  if (payGrowthValue === 0) {
+    console.warn('Missing pay growth data for', key)
+  }
+  return payGrowthValue
+}
+
+const multiplierToPct = (multiplier: number): number => (multiplier - 1) * 100
+
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
     toSalaryEntry('2016-07', 15392),
@@ -152,9 +170,13 @@ export default function SalaryInflationPage() {
       const prevPct = ((entry.amount - prev.amount) / prev.amount) * 100
 
       // compound inflation from prev.date to entry.date
-      const inflationMultiplier = compoundInflation(prev.date, entry.date)
+      const inflationMultiplier = compoundMultiplier(
+        prev.datetime,
+        entry.datetime,
+        getInflationValue
+      )
       const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
-      const inflationPct = (inflationMultiplier - 1) * 100
+      const inflationPct = multiplierToPct(inflationMultiplier)
 
       // real % difference of actual new salary vs inflation-matched value
       const realPct =
@@ -216,18 +238,19 @@ export default function SalaryInflationPage() {
         return [0, '-', '1.00']
       }
 
-      const inflation = compoundInflation(
-        entries[0].date,
-        entries[entries.length - 1].date
+      const inflationMultiplier = compoundMultiplier(
+        entries[0].datetime,
+        entries[entries.length - 1].datetime,
+        getInflationValue
       )
-      const inflationMatched = entries[0].amount * inflation
+      const inflationMatched = entries[0].amount * inflationMultiplier
       const last = entries[entries.length - 1].amount
       const realPct = ((last - inflationMatched) / inflationMatched) * 100
 
       return [
         realPct,
-        formatPct((inflation - 1) * 100),
-        (1 * inflation).toFixed(2)
+        formatPct(multiplierToPct(inflationMultiplier)),
+        (1 * inflationMultiplier).toFixed(2)
       ]
     }, [entries])
 
@@ -252,16 +275,29 @@ export default function SalaryInflationPage() {
     return str
   }, [entries])
 
+  const averagePayRiseOverPeriod = useMemo(() => {
+    if (entries.length < 2) {
+      return 0
+    }
+
+    const payGrowthMultiplier = compoundMultiplier(
+      entries[0].datetime,
+      entries[entries.length - 1].datetime,
+      getPayGrowthValue
+    )
+    return multiplierToPct(payGrowthMultiplier)
+  }, [entries])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <Card className="shadow">
-          <CardHeader className="flex-col">
+          <CardHeader>
             <h1 className="text-2xl font-semibold">TODO</h1>
           </CardHeader>
 
           <CardBody>
-            <ul className="list-disc list-inside ">
+            <ul className="list-disc list-inside">
               {[
                 '"if you got a raise today" list item for what you should be getting, compare to the ons widget',
                 'check the maths',
@@ -279,10 +315,31 @@ export default function SalaryInflationPage() {
           </CardBody>
         </Card>
 
+        <Divider />
+
+        <Card className="shadow">
+          <CardHeader>
+            <h1 className="text-2xl font-semibold">How to use</h1>
+          </CardHeader>
+
+          <CardBody>
+            Looking for a pay rise? Not sure what you should argue for? This is
+            what RaiseMeetsInflation is designed for. Put in your salary history
+            and you'll see how it compares to inflation.
+            <br />
+            Why should you care about inflation?
+            <br />
+            Because if your employer is giving you _less_ than inflation, it
+            means the spending power of your pay is going down. In "real" terms,
+            that means you're getting a **pay cut**, for doing the exact same
+            thing.
+          </CardBody>
+        </Card>
+
         <Spacer y={1} />
 
         <Card className="shadow-lg">
-          <CardHeader className="flex-col">
+          <CardHeader>
             <h1 className="text-2xl font-semibold">Salary vs Inflation</h1>
           </CardHeader>
 
@@ -436,12 +493,14 @@ export default function SalaryInflationPage() {
                     <div className="text-sm text-default-600">
                       Average Pay Rise Over Period
                     </div>
-                    <div className="text-xl font-bold">+420.69%</div>
+                    <div className="text-xl font-bold">
+                      {formatPct(averagePayRiseOverPeriod)}
+                    </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {overallAdjustedChange === 0 ? (
+                    {averagePayRiseOverPeriod === 0 ? (
                       <ArrowLongRightIcon />
-                    ) : overallAdjustedChange > 0 ? (
+                    ) : averagePayRiseOverPeriod > 0 ? (
                       <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
                     ) : (
                       <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
@@ -588,11 +647,10 @@ export default function SalaryInflationPage() {
 
             <ul className="list-disc ml-5 text-sm text-default-600">
               <li>
-                Calculations use monthly CPIH/CPI annual rates
-                converted to monthly multipliers and compounded between the
-                selected months - different methods (e.g. interpolating daily
-                rates, or using alternative indexing) will produce different
-                results.
+                Calculations use monthly CPIH/CPI annual rates converted to
+                monthly multipliers and compounded between the selected months -
+                different methods (e.g. interpolating daily rates, or using
+                alternative indexing) will produce different results.
               </li>
               <li>
                 Data sourced from the UK Office for National Statistics (ONS).
