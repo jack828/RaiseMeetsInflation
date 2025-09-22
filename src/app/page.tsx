@@ -662,7 +662,8 @@ export default function SalaryInflationPage() {
                 alternative indexing) will produce different results.
               </li>
               <li>
-                Data sourced from the UK Office for National Statistics (ONS).
+                Inflation data sourced from the UK Office for National
+                Statistics (ONS):
                 <div className="mt-1 space-y-1">
                   <a
                     className="text-primary-600"
@@ -681,7 +682,13 @@ export default function SalaryInflationPage() {
                   >
                     ONS - CPI ANNUAL RATE 00: ALL ITEMS 2015=100
                   </a>
-                  <br />
+                </div>
+              </li>
+
+              <li>
+                Pay growth data sourced from the UK Office for National
+                Statistics (ONS):
+                <div className="mt-1 space-y-1">
                   <a
                     className="text-primary-600"
                     href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/realtimeinformationstatisticsreferencetablenonseasonallyadjusted"
@@ -692,24 +699,24 @@ export default function SalaryInflationPage() {
                     Information, non-seasonally adjusted [27. Median of Pay
                     Growth (UK)]
                   </a>
+                  <br />
+                  <strong>
+                    Pay growth varies wildly depending on industry and your
+                    specific job role.
+                  </strong>
                 </div>
               </li>
 
               <li>
-                Anonymity & handling: None of your salary information leaves
-                your browser. If you choose to screenshot or download a copy of
-                the page, then it only exists with you.
+                None of your salary information leaves your browser. If you
+                choose to screenshot or download a copy of the page, then it
+                only exists with you.
               </li>
               <li>
                 This is not financial, tax, or employment advice. For important
                 decisions, consult a qualified professional.
               </li>
             </ul>
-
-            <p className="text-sm text-default-600">
-              Average pay rise figures are from TODO SOURCE and vary wildly
-              depending on your industry and specific job role.
-            </p>
 
             <p className="text-sm text-default-600">
               Data last updated on TODO DATE. Some figures take time to release
