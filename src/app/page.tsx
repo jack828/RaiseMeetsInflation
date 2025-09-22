@@ -40,8 +40,7 @@ import {
   .map((r) => ({
     date: new Date(`01 ${r[0]}`).toISOString().slice(0, 7),
     cpih: Number(r[1]),
-    cpi: Number(r[2]),
-    ooh: Number(r[3])
+    cpi: Number(r[2])
   }))
   .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
 
@@ -57,7 +56,7 @@ interface SalaryEntry {
 }
 
 type InflationDataEntry = keyof typeof inflationData
-type InflationType = 'cpih' | 'cpi' | 'ooh'
+type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
 
 const monthKey = (isoMonth: string): InflationDataEntry =>
@@ -589,35 +588,46 @@ export default function SalaryInflationPage() {
 
             <ul className="list-disc ml-5 text-sm text-default-600">
               <li>
-                Variation: Calculations use monthly CPIH/CPI/OOH year‑on‑year
-                rates converted to monthly multipliers and compounded between
-                the selected months - different methods (e.g. interpolating
-                daily rates, or using alternative indexing) will produce
-                different results.
+                Calculations use monthly CPIH/CPI annual rates
+                converted to monthly multipliers and compounded between the
+                selected months - different methods (e.g. interpolating daily
+                rates, or using alternative indexing) will produce different
+                results.
               </li>
               <li>
-                Data sources: CPIH/CPI/OOH monthly rates should be obtained from
-                the UK Office for National Statistics (ONS).
+                Data sourced from the UK Office for National Statistics (ONS).
                 <div className="mt-1 space-y-1">
                   <a
                     className="text-primary-600"
-                    href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"
+                    href="https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55o/mm23"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    ONS - Consumer price inflation (CPIH & CPI & OOH) bulletin
+                    ONS - CPIH ANNUAL RATE 00: ALL ITEMS 2015=100
                   </a>
                   <br />
                   <a
                     className="text-primary-600"
-                    href="https://www.ons.gov.uk/methodology/classificationsandstandards/measuringinflation"
+                    href="https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7g7/mm23"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    ONS - Measuring inflation (methodology)
+                    ONS - CPI ANNUAL RATE 00: ALL ITEMS 2015=100
+                  </a>
+                  <br />
+                  <a
+                    className="text-primary-600"
+                    href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/realtimeinformationstatisticsreferencetablenonseasonallyadjusted"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Earnings and employment from Pay As You Earn Real Time
+                    Information, non-seasonally adjusted [27. Median of Pay
+                    Growth (UK)]
                   </a>
                 </div>
               </li>
+
               <li>
                 Anonymity & handling: None of your salary information leaves
                 your browser. If you choose to screenshot or download a copy of
@@ -635,7 +645,9 @@ export default function SalaryInflationPage() {
             </p>
 
             <p className="text-sm text-default-600">
-              Data last updated on TODO DATE
+              Data last updated on TODO DATE. Some figures take time to release
+              and therefore may be out of date until the data sources used
+              publish new versions.
             </p>
           </CardBody>
         </Card>
