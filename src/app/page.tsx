@@ -261,8 +261,9 @@ export default function SalaryInflationPage() {
                 'salary £ misaligned',
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'inflation metric selector',
+                'smart quotes',
                 'ko-fi',
-                'ads',
+                'ads'
               ].map((item, i) => (
                 <li key={`${i}`}>{item}</li>
               ))}
@@ -341,7 +342,7 @@ export default function SalaryInflationPage() {
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
                     inflation has risen by {overallInflation}. This means that
-                    £1 then is worth £{exampleInflationValue} today.
+                    £1 then has the same purchasing power as £{exampleInflationValue} today.
                   </div>
                 </div>
                 <div className="p-4 bg-default-100 rounded">
@@ -349,41 +350,61 @@ export default function SalaryInflationPage() {
                   <div className="text-xl font-bold">{timePeriod}</div>
                 </div>
               </div>
-              <div className="p-4 bg-default-100 rounded">
-                <div className="text-sm text-default-600">
-                  Overall Nominal Change
-                </div>
-                <div className="text-xl font-bold">{overallNominalChange}</div>
-              </div>
-              <div className="p-4 bg-default-100 rounded">
-                <div className="text-sm text-default-600">
-                  Overall Real vs Inflation
-                </div>
-                <div className="text-xl font-bold">
-                  {overallRealVsInflation}
-                </div>
-              </div>
-              <div className="p-4 bg-default-100 rounded flex items-center">
-                <div className="flex-1">
-                  <div className="text-sm text-default-600">
-                    Average Pay Rise Over Period
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-md text-default-700">
+                    This is the amount that your salary has increased, ignoring
+                    inflation, over the all the entries you've provided.
                   </div>
-                  <div className="text-xl font-bold">+420.69%</div>
                 </div>
-                <div className="ml-3 w-6 flex items-center justify-center">
-                  <Tooltip
-                    content={
-                      <div className="px-1 py-2">
-                        <div className="text-small">
-                          The cumulative average increase in pay over the UK
-                          pro-rated to the time period you’ve provided.
-                        </div>
-                      </div>
-                    }
-                    showArrow={true}
-                  >
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-sm text-default-600">
+                    Overall Nominal Change
+                  </div>
+                  <div className="text-xl font-bold">
+                    {overallNominalChange}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-md text-default-700">
+                    Factoring in inflation to your salary history, this is how
+                    much it has changed in terms of real spending power.
+                  </div>
+                </div>
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-sm text-default-600">
+                    Overall Adjusted Change
+                  </div>
+                  <div className="text-xl font-bold">
+                    {overallRealVsInflation}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-md text-default-700">
+                    The cumulative average increase in pay over the UK,
+                    pro-rated to the time period you’ve provided.
+                    <br />
+                    Generally, this is how much everyone else's salary has
+                    increased over the same time.
+                  </div>
+                </div>
+                <div className="p-4 bg-default-100 rounded flex items-center">
+                  <div className="flex-1">
+                    <div className="text-sm text-default-600">
+                      Average Pay Rise Over Period
+                    </div>
+                    <div className="text-xl font-bold">+420.69%</div>
+                  </div>
+                  <div className="ml-3 w-6 flex items-center justify-center">
                     <span className="text-default-500">🛈</span>
-                  </Tooltip>
+                  </div>
                 </div>
               </div>
             </div>
