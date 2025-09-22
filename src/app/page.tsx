@@ -18,12 +18,14 @@ import {
   Tooltip,
   Select,
   SelectItem,
-  Divider
+  Divider,
+  CardFooter
 } from '@heroui/react'
 import { v4 as uuidv4 } from 'uuid'
 import { add, intervalToDuration, parse } from 'date-fns'
 
 import {
+  ArrowDownIcon,
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
   ArrowTrendingUpIcon,
@@ -78,6 +80,7 @@ const compoundMultiplier = (
   getValue: (key: string) => number
 ) => {
   if (!start || !end) return 1
+  const now = new Date()
   let current = start
   let multiplier = 1
   // include start month and end month
@@ -89,7 +92,7 @@ const compoundMultiplier = (
     if (current.toISOString() === end.toISOString()) break
     current = add(current, { months: 1 })
     // safety to avoid infinite loop
-    if (multiplier > 1e6) break
+    if (multiplier > 1e6 || current.getTime() > now.getTime()) break
   }
   return multiplier
 }
@@ -141,6 +144,44 @@ const getPayGrowthValue = (key: string) => {
 }
 
 const multiplierToPct = (multiplier: number): number => (multiplier - 1) * 100
+
+const formatCurrency = (v?: number) =>
+  v == null
+    ? '—'
+    : new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP'
+      }).format(v)
+
+const formatPct = (v?: number) =>
+  v == null ? '—' : `${v === 0 ? '±' : v >= 0 ? '+' : ''}${v.toFixed(2)}%`
+
+const formatTimePeriod = (start: Date, end: Date) => {
+  const d = intervalToDuration({
+    start,
+    end
+  })
+  let str = ''
+  if (d.years) {
+    str += d.years === 1 ? '1 year' : `${d.years} years`
+  }
+  if (d.months) {
+    if (d.years) {
+      str += ' '
+    }
+    str += d.months === 1 ? '1 month' : `${d.months} months`
+  }
+  return str
+}
+
+const trendIcon = (v: number) =>
+  v === 0 ? (
+    <ArrowLongRightIcon />
+  ) : v > 0 ? (
+    <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
+  ) : (
+    <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
+  )
 
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
@@ -210,17 +251,6 @@ export default function SalaryInflationPage() {
   const removeEntry = (id: string) =>
     setEntries((s) => s.filter((r) => r.id !== id))
 
-  const formatCurrency = (v?: number) =>
-    v == null
-      ? '—'
-      : new Intl.NumberFormat('en-GB', {
-          style: 'currency',
-          currency: 'GBP'
-        }).format(v)
-
-  const formatPct = (v?: number) =>
-    v == null ? '—' : `${v === 0 ? '±' : v >= 0 ? '+' : ''}${v.toFixed(2)}%`
-
   const overallNominalChange = useMemo(() => {
     if (entries.length < 2) {
       return 0
@@ -258,21 +288,10 @@ export default function SalaryInflationPage() {
     if (entries.length < 2) {
       return '-'
     }
-    const d = intervalToDuration({
-      start: entries[0].datetime,
-      end: entries[entries.length - 1].datetime
-    })
-    let str = ''
-    if (d.years) {
-      str += d.years === 1 ? '1 year' : `${d.years} years`
-    }
-    if (d.months) {
-      if (d.years) {
-        str += ' '
-      }
-      str += d.months === 1 ? '1 month' : `${d.months} months`
-    }
-    return str
+    return formatTimePeriod(
+      entries[0].datetime,
+      entries[entries.length - 1].datetime
+    )
   }, [entries])
 
   const averagePayRiseOverPeriod = useMemo(() => {
@@ -287,15 +306,6 @@ export default function SalaryInflationPage() {
     )
     return multiplierToPct(payGrowthMultiplier)
   }, [entries])
-
-  const trendIcon = (v: number) =>
-    v === 0 ? (
-      <ArrowLongRightIcon />
-    ) : v > 0 ? (
-      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
-    ) : (
-      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
-    )
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
@@ -427,7 +437,6 @@ export default function SalaryInflationPage() {
                 </div>
                 <div className="p-4 bg-default-100 rounded flex items-center">
                   <div className="flex-1">
-                    <div className="text-sm text-default-600">Time period</div>
                     <div className="text-xl font-bold">{timePeriod}</div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
@@ -509,6 +518,14 @@ export default function SalaryInflationPage() {
                 </div>
               </div>
             </div>
+
+            <CardFooter className="flex flex-col justify-center space-y-2">
+              <p>
+                Want to see how much you should ask for next? Scroll down and
+                see.
+              </p>
+              <ArrowDownIcon className="size-6 animate-bounce" />
+            </CardFooter>
           </CardBody>
         </Card>
 
@@ -617,16 +634,17 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
+        <NextRaiseCard entries={entries} />
+
+        <Spacer y={1} />
+
         <Card className="shadow">
           <CardHeader>
             <h2 className="text-lg font-medium">Visualization</h2>
           </CardHeader>
           <CardBody>
             <div className="h-64 bg-default-100 rounded-lg flex items-center justify-center">
-              <p className="text-default-400">
-                Chart placeholder — plug in chart library and feed (date,
-                actual, inflationMatched)
-              </p>
+              <p className="text-default-400">Chart placeholder</p>
             </div>
           </CardBody>
         </Card>
@@ -728,5 +746,130 @@ export default function SalaryInflationPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
+  const data = useMemo(() => {
+    if (!entries || entries.length === 0) return null
+
+    const now = new Date()
+    const last = entries[entries.length - 1]
+    const lastDate = last.datetime
+    const lastAmount = last.amount
+    const timePeriod = formatTimePeriod(lastDate, now)
+
+    const inflationMultiplier = compoundMultiplier(
+      lastDate,
+      now,
+      getInflationValue
+    )
+    const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
+    const inflationPct = multiplierToPct(inflationMultiplier)
+    const askRestorePct =
+      ((inflationTargetSalary - lastAmount) / lastAmount) * 100
+
+    const payGrowthMultiplier = compoundMultiplier(
+      lastDate,
+      now,
+      getPayGrowthValue
+    )
+    const marketTargetSalary = +(lastAmount * payGrowthMultiplier).toFixed(2)
+    const payGrowthPct = multiplierToPct(payGrowthMultiplier)
+
+    return {
+      timePeriod,
+      lastDate,
+      lastAmount,
+      inflationTargetSalary,
+      inflationPct,
+      askRestorePct,
+      marketTargetSalary,
+      payGrowthPct
+    }
+  }, [entries])
+
+  if (!data) {
+    return (
+      <Card className="shadow">
+        <CardHeader>
+          <h1 className="text-lg font-medium">Your next raise</h1>
+        </CardHeader>
+        <CardBody>
+          <div className="text-sm text-default-600">
+            Add at least one salary entry to see recommendations.
+          </div>
+        </CardBody>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className="shadow">
+      <CardHeader>
+        <h1 className="text-lg font-medium">Your next raise</h1>
+      </CardHeader>
+
+      <CardBody>
+        <div className="grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-default-100 rounded">
+              <div className="text-md text-default-700">
+                Salary required now to restore the purchasing power of your last
+                recorded pay, given the current inflation of{' '}
+                <strong>{formatPct(data.inflationPct)}</strong> over the last{' '}
+                <strong>{data.timePeriod}</strong> since your last raise.
+              </div>
+            </div>
+            <div className="p-4 bg-default-100 rounded flex items-center">
+              <div className="flex-1">
+                <div className="text-sm text-default-600">
+                  To restore purchasing power
+                </div>
+                <div className="text-xl font-bold">
+                  {formatCurrency(data.inflationTargetSalary)}
+                </div>
+
+                <div className="text-sm text-default-500">
+                  {formatPct(data.askRestorePct)}
+                </div>
+              </div>
+              <div className="ml-3 w-6 flex items-center justify-center">
+                {trendIcon(data.askRestorePct)}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-default-100 rounded">
+              <div className="text-md text-default-700">
+                To match the market median growth, this is what you'd need. It's{' '}
+                <strong>
+                  {formatPct(data.payGrowthPct - data.inflationPct)}
+                </strong>{' '}
+                above the rate of inflation.
+              </div>
+            </div>
+            <div className="p-4 bg-default-100 rounded flex items-center">
+              <div className="flex-1">
+                <div className="text-sm text-default-600">
+                  To match the market median growth
+                </div>
+                <div className="text-xl font-bold">
+                  {formatCurrency(data.marketTargetSalary)}
+                </div>
+
+                <div className="text-sm text-default-500">
+                  {formatPct(data.payGrowthPct)}
+                </div>
+              </div>
+              <div className="ml-3 w-6 flex items-center justify-center">
+                {trendIcon(data.payGrowthPct)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
   )
 }
