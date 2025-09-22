@@ -24,9 +24,6 @@ import {
 
 import {
   ArrowDownIcon,
-  ArrowLongRightIcon,
-  ArrowTrendingDownIcon,
-  ArrowTrendingUpIcon,
   CalendarDateRangeIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
@@ -34,6 +31,8 @@ import {
 import { compoundMultiplier, multiplierToPct, toSalaryEntry } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
+import { NextRaiseCard } from '@/components/next-raise-card'
+import { trendIcon } from '@/components/trend-icon'
 
 export interface SalaryEntry {
   id: string
@@ -68,15 +67,6 @@ const MIN_YEAR = 2015
 const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
   .fill(0)
   .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
-
-const trendIcon = (v: number) =>
-  v === 0 ? (
-    <ArrowLongRightIcon />
-  ) : v > 0 ? (
-    <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
-  ) : (
-    <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
-  )
 
 export default function SalaryInflationPage() {
   const [entries, setEntries] = useState<SalaryEntry[]>([
@@ -533,7 +523,7 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <NextRaiseCard entries={entries} />
+        <NextRaiseCard entries={entries} inflationType={inflationType} />
 
         <Spacer y={1} />
 
@@ -645,137 +635,5 @@ export default function SalaryInflationPage() {
         </p>
       </div>
     </div>
-  )
-}
-
-export function NextRaiseCard({ entries }: { entries: SalaryEntry[] }) {
-  const data = useMemo(() => {
-    if (!entries || entries.length === 0) return null
-
-    const now = new Date()
-    const last = entries[entries.length - 1]
-    const lastDate = last.datetime
-    const lastAmount = last.amount
-    const timePeriod = formatters.timePeriod(lastDate, now)
-
-    const inflationMultiplier = compoundMultiplier(
-      lastDate,
-      now,
-      datasets.getInflationValue(inflationType)
-    )
-    const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
-    const inflationPct = multiplierToPct(inflationMultiplier)
-    const askRestorePct =
-      ((inflationTargetSalary - lastAmount) / lastAmount) * 100
-
-    const payGrowthMultiplier = compoundMultiplier(
-      lastDate,
-      now,
-      datasets.getPayGrowthValue
-    )
-    const marketTargetSalary = +(lastAmount * payGrowthMultiplier).toFixed(2)
-    const payGrowthPct = multiplierToPct(payGrowthMultiplier)
-
-    return {
-      timePeriod,
-      lastDate,
-      lastAmount,
-      inflationTargetSalary,
-      inflationPct,
-      askRestorePct,
-      marketTargetSalary,
-      payGrowthPct
-    }
-  }, [entries])
-
-  if (!data) {
-    return (
-      <Card className="shadow">
-        <CardHeader>
-          <h1 className="text-lg font-medium">Your next raise</h1>
-        </CardHeader>
-        <CardBody>
-          <div className="text-sm text-default-600">
-            Add at least one salary entry to see recommendations.
-          </div>
-        </CardBody>
-      </Card>
-    )
-  }
-
-  return (
-    <Card className="shadow">
-      <CardHeader>
-        <h1 className="text-lg font-medium">Your next raise</h1>
-      </CardHeader>
-
-      <CardBody>
-        <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-default-100 rounded">
-              <div className="text-md text-default-700">
-                Salary required now to restore the purchasing power of your last
-                recorded pay, given the current inflation of{' '}
-                <strong>{formatters.pct(data.inflationPct)}</strong> over the
-                last <strong>{data.timePeriod}</strong> since your last raise.
-              </div>
-            </div>
-            <div className="p-4 bg-default-100 rounded flex items-center">
-              <div className="flex-1">
-                <div className="text-sm text-default-600">
-                  To restore purchasing power
-                </div>
-                <div className="text-xl font-bold">
-                  {formatters.currency(data.inflationTargetSalary)}
-                </div>
-
-                <div className="text-sm text-default-500">
-                  {formatters.pct(data.askRestorePct)}
-                </div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                {trendIcon(data.askRestorePct)}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-default-100 rounded">
-              <div className="text-md text-default-700">
-                To match the market median growth, this is what you'd need. It's{' '}
-                <strong>
-                  {formatters.pct(data.payGrowthPct - data.inflationPct)}
-                </strong>{' '}
-                above the rate of inflation.
-              </div>
-            </div>
-            <div className="p-4 bg-default-100 rounded flex items-center">
-              <div className="flex-1">
-                <div className="text-sm text-default-600">
-                  To match the market median growth
-                </div>
-                <div className="text-xl font-bold">
-                  {formatters.currency(data.marketTargetSalary)}
-                </div>
-
-                <div className="text-sm text-default-500">
-                  {formatters.pct(data.payGrowthPct)}
-                </div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                {trendIcon(data.payGrowthPct)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardBody>
-      <CardFooter>
-        <p className="text-sm text-default-500">
-          This may be different to other sites, as we look at the inflation
-          since your last wage - not just in the last 12 months. This should be
-          more accurate to what you should get.
-        </p>
-      </CardFooter>
-    </Card>
   )
 }
