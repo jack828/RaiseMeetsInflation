@@ -197,9 +197,8 @@ export default function SalaryInflationPage() {
   // TODO explainer
   let overallNominalChange = '-'
   if (entries.length >= 2) {
-    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
-    const first = sorted[0].amount
-    const last = sorted[sorted.length - 1].amount
+    const first = entries[0].amount
+    const last = entries[entries.length - 1].amount
     const pct = ((last - first) / first) * 100
     overallNominalChange = `${pct.toFixed(2)}%`
   }
@@ -207,17 +206,21 @@ export default function SalaryInflationPage() {
   // TODO red/green
   // TODO is this correct
   let overallRealVsInflation = '-'
+  let overallInflation = '-'
+  let exampleInflationValue = '1.00'
   if (entries.length >= 2) {
-    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
     // compute cumulative inflation from first.date to last.date
-    const mult = compoundInflation(
-      sorted[0].date,
-      sorted[sorted.length - 1].date
+    const inflation = compoundInflation(
+      entries[0].date,
+      entries[entries.length - 1].date
     )
-    const inflationMatched = sorted[0].amount * mult
-    const last = sorted[sorted.length - 1].amount
+    const inflationMatched = entries[0].amount * inflation
+    const last = entries[entries.length - 1].amount
     const realPct = ((last - inflationMatched) / inflationMatched) * 100
-    overallRealVsInflation = `${realPct >= 0 ? '+' : ''}${realPct.toFixed(2)}%`
+    overallRealVsInflation = formatPct(realPct)
+
+    overallInflation = formatPct((inflation - 1) * 100)
+    exampleInflationValue = (1 * inflation).toFixed(2)
   }
 
   const timePeriod = useMemo(() => {
@@ -256,9 +259,10 @@ export default function SalaryInflationPage() {
                 'check the maths',
                 'Input salary or hourly wage + hours/week',
                 'salary £ misaligned',
+                'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'inflation metric selector',
                 'ko-fi',
-                'ads'
+                'ads',
               ].map((item, i) => (
                 <li key={`${i}`}>{item}</li>
               ))}
@@ -331,10 +335,19 @@ export default function SalaryInflationPage() {
             <h2 className="text-lg font-medium">Summary</h2>
           </CardHeader>
           <CardBody>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-default-100 rounded">
-                <div className="text-sm text-default-600">Time period</div>
-                <div className="text-xl font-bold">{timePeriod}</div>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-md text-default-700">
+                    Based on your chosen inflation metric, over {timePeriod}{' '}
+                    inflation has risen by {overallInflation}. This means that
+                    £1 then is worth £{exampleInflationValue} today.
+                  </div>
+                </div>
+                <div className="p-4 bg-default-100 rounded">
+                  <div className="text-sm text-default-600">Time period</div>
+                  <div className="text-xl font-bold">{timePeriod}</div>
+                </div>
               </div>
               <div className="p-4 bg-default-100 rounded">
                 <div className="text-sm text-default-600">
