@@ -203,10 +203,7 @@ export default function SalaryInflationPage() {
           <CardBody>
             <ul className="list-disc list-inside">
               {[
-                '"if you got a raise today" list item for what you should be getting, compare to the ons widget',
-                'check the maths',
                 'Input salary or hourly wage + hours/week',
-                'salary £ misaligned',
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'inflation metric selector',
                 'smart quotes',
@@ -285,7 +282,11 @@ export default function SalaryInflationPage() {
                   placeholder="9001"
                   value={amount}
                   onChange={(e: any) => setAmount(e.target.value)}
-                  startContent={<span className="text-default-400">£</span>}
+                  startContent={
+                    <div className="pointer-events-none flex items-center">
+                      <span className="text-default-400 text-small">£</span>
+                    </div>
+                  }
                   variant="bordered"
                 />
               </div>
