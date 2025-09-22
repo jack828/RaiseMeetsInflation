@@ -288,6 +288,15 @@ export default function SalaryInflationPage() {
     return multiplierToPct(payGrowthMultiplier)
   }, [entries])
 
+  const trendIcon = (v: number) =>
+    v === 0 ? (
+      <ArrowLongRightIcon />
+    ) : v > 0 ? (
+      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
+    ) : (
+      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
+    )
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -444,13 +453,7 @@ export default function SalaryInflationPage() {
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {overallNominalChange === 0 ? (
-                      <ArrowLongRightIcon />
-                    ) : overallNominalChange > 0 ? (
-                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
-                    ) : (
-                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
-                    )}
+                    {trendIcon(overallNominalChange)}
                   </div>
                 </div>
               </div>
@@ -472,13 +475,7 @@ export default function SalaryInflationPage() {
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {overallAdjustedChange === 0 ? (
-                      <ArrowLongRightIcon />
-                    ) : overallAdjustedChange > 0 ? (
-                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
-                    ) : (
-                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
-                    )}
+                    {trendIcon(overallAdjustedChange)}
                   </div>
                 </div>
               </div>
@@ -507,13 +504,7 @@ export default function SalaryInflationPage() {
                     </div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    {averagePayRiseOverPeriod === 0 ? (
-                      <ArrowLongRightIcon />
-                    ) : averagePayRiseOverPeriod > 0 ? (
-                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
-                    ) : (
-                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
-                    )}
+                    {trendIcon(averagePayRiseOverPeriod)}
                   </div>
                 </div>
               </div>
