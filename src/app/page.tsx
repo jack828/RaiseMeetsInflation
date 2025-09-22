@@ -498,7 +498,7 @@ export default function SalaryInflationPage() {
                     }
                     showArrow={true}
                   >
-                    Salary vs Inflation 🛈
+                    Difference vs Inflation 🛈
                   </Tooltip>
                 </TableColumn>
                 <TableColumn hideHeader>Actions</TableColumn>
