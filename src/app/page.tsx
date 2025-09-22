@@ -225,7 +225,9 @@ export default function SalaryInflationPage() {
                 'check the maths',
                 'Input salary or hourly wage + hours/week',
                 'salary £ misaligned',
-                'inflation metric selector'
+                'inflation metric selector',
+                'ko-fi',
+                'ads'
               ].map((item, i) => (
                 <li key={`${i}`}>{item}</li>
               ))}
@@ -463,10 +465,10 @@ export default function SalaryInflationPage() {
           </CardBody>
         </Card>
 
-        <Divider />
+        <Spacer y={1} />
 
         <Card className="shadow">
-          <CardHeader className="flex-col">
+          <CardHeader>
             <h1 className="text-2xl font-semibold">DISCLAIMER</h1>
           </CardHeader>
 
@@ -525,6 +527,16 @@ export default function SalaryInflationPage() {
             </p>
           </CardBody>
         </Card>
+
+        <Divider />
+        <p className="text-sm text-default-500 text-center">
+          <a href="https://jackburgess.dev">Jack Burgess</a> &copy;{' '}
+          {new Date().getFullYear()}
+          <br />
+          Powered my tea, marmalade, and curiosity.
+          <br />
+          <span className="font-mono">&lt;/website&gt;</span>
+        </p>
       </div>
     </div>
   )
