@@ -24,6 +24,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { intervalToDuration, parse } from 'date-fns'
 
 import inflationData from '../data/inflation-uk.json' assert { type: 'json' }
+import {
+  ArrowLongRightIcon,
+  ArrowTrendingDownIcon,
+  ArrowTrendingUpIcon,
+  CalendarDateRangeIcon
+} from '@heroicons/react/24/outline'
 /*TODO FIXME some dates missing or inaccurate.
  parsed = raw
   .split('\n')
@@ -195,17 +201,17 @@ export default function SalaryInflationPage() {
 
   // TODO useMemo and optimise
   // TODO explainer
-  let overallNominalChange = '-'
+  let overallNominalChange = 0
   if (entries.length >= 2) {
     const first = entries[0].amount
     const last = entries[entries.length - 1].amount
     const pct = ((last - first) / first) * 100
-    overallNominalChange = `${pct.toFixed(2)}%`
+    overallNominalChange = pct
   }
 
   // TODO red/green
   // TODO is this correct
-  let overallRealVsInflation = '-'
+  let overallRealVsInflation = 0
   let overallInflation = '-'
   let exampleInflationValue = '1.00'
   if (entries.length >= 2) {
@@ -217,7 +223,7 @@ export default function SalaryInflationPage() {
     const inflationMatched = entries[0].amount * inflation
     const last = entries[entries.length - 1].amount
     const realPct = ((last - inflationMatched) / inflationMatched) * 100
-    overallRealVsInflation = formatPct(realPct)
+    overallRealVsInflation = realPct
 
     overallInflation = formatPct((inflation - 1) * 100)
     exampleInflationValue = (1 * inflation).toFixed(2)
@@ -342,12 +348,18 @@ export default function SalaryInflationPage() {
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
                     inflation has risen by {overallInflation}. This means that
-                    £1 then has the same purchasing power as £{exampleInflationValue} today.
+                    £1 then has the same purchasing power as £
+                    {exampleInflationValue} today.
                   </div>
                 </div>
-                <div className="p-4 bg-default-100 rounded">
-                  <div className="text-sm text-default-600">Time period</div>
-                  <div className="text-xl font-bold">{timePeriod}</div>
+                <div className="p-4 bg-default-100 rounded flex items-center">
+                  <div className="flex-1">
+                    <div className="text-sm text-default-600">Time period</div>
+                    <div className="text-xl font-bold">{timePeriod}</div>
+                  </div>
+                  <div className="ml-3 w-6 flex items-center justify-center">
+                    <CalendarDateRangeIcon />
+                  </div>
                 </div>
               </div>
 
@@ -358,12 +370,23 @@ export default function SalaryInflationPage() {
                     inflation, over the all the entries you've provided.
                   </div>
                 </div>
-                <div className="p-4 bg-default-100 rounded">
-                  <div className="text-sm text-default-600">
-                    Overall Nominal Change
+                <div className="p-4 bg-default-100 rounded flex items-center">
+                  <div className="flex-1">
+                    <div className="text-sm text-default-600">
+                      Overall Nominal Change
+                    </div>
+                    <div className="text-xl font-bold">
+                      {formatPct(overallNominalChange)}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold">
-                    {overallNominalChange}
+                  <div className="ml-3 w-6 flex items-center justify-center">
+                    {overallNominalChange === 0 ? (
+                      <ArrowLongRightIcon />
+                    ) : overallNominalChange > 0 ? (
+                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
+                    ) : (
+                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -375,12 +398,23 @@ export default function SalaryInflationPage() {
                     much it has changed in terms of real spending power.
                   </div>
                 </div>
-                <div className="p-4 bg-default-100 rounded">
-                  <div className="text-sm text-default-600">
-                    Overall Adjusted Change
+                <div className="p-4 bg-default-100 rounded flex items-center">
+                  <div className="flex-1">
+                    <div className="text-sm text-default-600">
+                      Overall Adjusted Change
+                    </div>
+                    <div className="text-xl font-bold">
+                      {formatPct(overallRealVsInflation)}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold">
-                    {overallRealVsInflation}
+                  <div className="ml-3 w-6 flex items-center justify-center">
+                    {overallRealVsInflation === 0 ? (
+                      <ArrowLongRightIcon />
+                    ) : overallRealVsInflation > 0 ? (
+                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
+                    ) : (
+                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -403,7 +437,13 @@ export default function SalaryInflationPage() {
                     <div className="text-xl font-bold">+420.69%</div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
-                    <span className="text-default-500">🛈</span>
+                    {overallRealVsInflation === 0 ? (
+                      <ArrowLongRightIcon />
+                    ) : overallRealVsInflation > 0 ? (
+                      <ArrowTrendingUpIcon className="text-success-700 dark:text-success" />
+                    ) : (
+                      <ArrowTrendingDownIcon className="text-danger-600 dark:text-danger-500" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -583,6 +623,10 @@ export default function SalaryInflationPage() {
             <p className="text-sm text-default-600">
               Average pay rise figures are from TODO SOURCE and vary wildly
               depending on your industry and specific job role.
+            </p>
+
+            <p className="text-sm text-default-600">
+              Data last updated on TODO DATE
             </p>
           </CardBody>
         </Card>
