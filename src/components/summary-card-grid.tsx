@@ -23,20 +23,27 @@ export function SummaryCard({
   const left = React.Children.toArray(children).find(
     (c) =>
       React.isValidElement(c) &&
+      // eslint-disable-next-line
       (c.type as any).displayName === SummaryCardLeft.displayName
+    // eslint-disable-next-line
   ) as ReactElement<any> | undefined
 
   const right = React.Children.toArray(children).find(
     (c) =>
       React.isValidElement(c) &&
+      // eslint-disable-next-line
       (c.type as any).displayName === SummaryCardRight.displayName
+    // eslint-disable-next-line
   ) as ReactElement<any> | undefined
 
   const fallbackRight = React.Children.toArray(children).find(
     (c) =>
       React.isValidElement(c) &&
+      // eslint-disable-next-line
       (c.type as any).displayName === SummaryCardLeft.displayName &&
+      // eslint-disable-next-line
       (c.type as any).displayName === SummaryCardRight.displayName
+    // eslint-disable-next-line
   ) as ReactElement<any> | undefined
 
   // console.log({ left, right, fallbackRight })
