@@ -6,13 +6,19 @@ import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { InflationType } from '@/app/page'
 import { trendIcon } from './trend-icon'
+import {
+  SummaryCard,
+  SummaryCardGrid,
+  SummaryCardLeft,
+  SummaryCardRight
+} from './summary-card-grid'
 
-interface NextRaiseCardProps {
+interface NextRaiseSectionProps {
   entries: SalaryEntry[]
   inflationType: InflationType
 }
 
-export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
+export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
   entries,
   inflationType
 }) => {
@@ -77,17 +83,18 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
       </CardHeader>
 
       <CardBody>
-        <div className="grid grid-cols-1 gap-4 md:divide-none divide-y divide-dashed">
-          <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
-            <div className="p-4 bg-default-100 rounded">
+        <SummaryCardGrid>
+          <SummaryCard>
+            <SummaryCardLeft>
               <div className="text-md text-default-700">
                 Salary required now to restore the purchasing power of your last
                 recorded pay, given the current inflation of{' '}
                 <strong>{formatters.pct(data.inflationPct)}</strong> over the
                 last <strong>{data.timePeriod}</strong> since your last raise.
               </div>
-            </div>
-            <div className="p-4 bg-default-100 rounded flex items-center">
+            </SummaryCardLeft>
+
+            <SummaryCardRight>
               <div className="flex-1">
                 <div className="text-sm text-default-600">
                   To restore purchasing power
@@ -103,11 +110,11 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
               <div className="ml-3 w-6 flex items-center justify-center">
                 {trendIcon(data.askRestorePct)}
               </div>
-            </div>
-          </div>
+            </SummaryCardRight>
+          </SummaryCard>
 
-          <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 space-y-4 space-y-reverse flex flex-col-reverse">
-            <div className="p-4 bg-default-100 rounded">
+          <SummaryCard>
+            <SummaryCardLeft>
               <div className="text-md text-default-700">
                 To match the market median growth, this is what you’d need. It’s{' '}
                 <strong>
@@ -115,8 +122,9 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
                 </strong>{' '}
                 above the rate of inflation.
               </div>
-            </div>
-            <div className="p-4 bg-default-100 rounded flex items-center">
+            </SummaryCardLeft>
+
+            <SummaryCardRight>
               <div className="flex-1">
                 <div className="text-sm text-default-600">
                   To match the market median growth
@@ -132,10 +140,11 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
               <div className="ml-3 w-6 flex items-center justify-center">
                 {trendIcon(data.payGrowthPct)}
               </div>
-            </div>
-          </div>
-        </div>
+            </SummaryCardRight>
+          </SummaryCard>
+        </SummaryCardGrid>
       </CardBody>
+
       <CardFooter>
         <p className="text-sm text-default-500">
           This may be different to other sites, as we look at the inflation

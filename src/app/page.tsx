@@ -25,12 +25,23 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline'
 
-import { compoundMultiplier, multiplierToPct, SalaryEntry, toSalaryEntry } from '@/lib'
+import {
+  compoundMultiplier,
+  multiplierToPct,
+  SalaryEntry,
+  toSalaryEntry
+} from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
-import { NextRaiseCard } from '@/components/next-raise-card'
+import { NextRaiseSection } from '@/components/next-raise-section'
 import { trendIcon } from '@/components/trend-icon'
 import { SalaryInputCard } from '@/components/salary-input-card'
+import {
+  SummaryCard,
+  SummaryCardGrid,
+  SummaryCardLeft,
+  SummaryCardRight
+} from '@/components/summary-card-grid'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -166,7 +177,7 @@ export default function SalaryInflationPage() {
                 'smart quotes',
                 'ko-fi',
                 'ads',
-                'inflation metric selector',
+                'inflation metric selector'
               ].map((item, i) => (
                 <li key={`${i}`}>{item}</li>
               ))}
@@ -211,34 +222,34 @@ export default function SalaryInflationPage() {
             <h2 className="text-lg font-medium">Summary</h2>
           </CardHeader>
           <CardBody>
-            <div className="grid grid-cols-1 gap-4 md:divide-none divide-y divide-dashed">
-              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
-                <div className="p-4 bg-default-100 rounded">
+            <SummaryCardGrid>
+              <SummaryCard>
+                <SummaryCardLeft>
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
                     inflation has risen by {formatters.pct(overallInflation)}.
                     This means that £1 then has the same purchasing power as £
                     {exampleInflationValue} today.
                   </div>
-                </div>
-                <div className="p-4 bg-default-100 rounded flex items-center">
+                </SummaryCardLeft>
+                <SummaryCardRight>
                   <div className="flex-1">
                     <div className="text-xl font-bold">{timePeriod}</div>
                   </div>
                   <div className="ml-3 w-6 flex items-center justify-center">
                     <CalendarDateRangeIcon />
                   </div>
-                </div>
-              </div>
+                </SummaryCardRight>
+              </SummaryCard>
 
-              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
-                <div className="p-4 bg-default-100 rounded">
+              <SummaryCard>
+                <SummaryCardLeft>
                   <div className="text-md text-default-700">
                     This is the amount that your salary has increased, ignoring
                     inflation, over the all the entries you’ve provided.
                   </div>
-                </div>
-                <div className="p-4 bg-default-100 rounded flex items-center">
+                </SummaryCardLeft>
+                <SummaryCardRight>
                   <div className="flex-1">
                     <div className="text-sm text-default-600">
                       Overall Nominal Change
@@ -250,17 +261,17 @@ export default function SalaryInflationPage() {
                   <div className="ml-3 w-6 flex items-center justify-center">
                     {trendIcon(overallNominalChange)}
                   </div>
-                </div>
-              </div>
+                </SummaryCardRight>
+              </SummaryCard>
 
-              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
-                <div className="p-4 bg-default-100 rounded">
+              <SummaryCard>
+                <SummaryCardLeft>
                   <div className="text-md text-default-700">
                     Factoring in inflation to your salary history, this is how
                     much it has changed in terms of real spending power.
                   </div>
-                </div>
-                <div className="p-4 bg-default-100 rounded flex items-center">
+                </SummaryCardLeft>
+                <SummaryCardRight>
                   <div className="flex-1">
                     <div className="text-sm text-default-600">
                       Overall Adjusted Change
@@ -272,11 +283,11 @@ export default function SalaryInflationPage() {
                   <div className="ml-3 w-6 flex items-center justify-center">
                     {trendIcon(overallAdjustedChange)}
                   </div>
-                </div>
-              </div>
+                </SummaryCardRight>
+              </SummaryCard>
 
-              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
-                <div className="p-4 bg-default-100 rounded">
+              <SummaryCard>
+                <SummaryCardLeft>
                   <div className="text-md text-default-700">
                     The cumulative average increase in pay over the UK,
                     pro-rated to the time period you’ve provided.
@@ -284,8 +295,8 @@ export default function SalaryInflationPage() {
                     Generally, this is how much everyone else’s salary has
                     increased over the same time.
                   </div>
-                </div>
-                <div className="p-4 bg-default-100 rounded flex items-center">
+                </SummaryCardLeft>
+                <SummaryCardRight>
                   <div className="flex-1">
                     <div className="text-sm text-default-600">
                       Average Pay Rise Over Period
@@ -303,18 +314,17 @@ export default function SalaryInflationPage() {
                   <div className="ml-3 w-6 flex items-center justify-center">
                     {trendIcon(averagePayRiseOverPeriod)}
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <CardFooter className="flex flex-col justify-center space-y-2">
-              <p>
-                Want to see how much you should ask for next? Scroll down and
-                see.
-              </p>
-              <ArrowDownIcon className="size-6 animate-bounce" />
-            </CardFooter>
+                </SummaryCardRight>
+              </SummaryCard>
+            </SummaryCardGrid>
           </CardBody>
+
+          <CardFooter className="flex flex-col justify-center space-y-2">
+            <p>
+              Want to see how much you should ask for next? Scroll down and see.
+            </p>
+            <ArrowDownIcon className="size-6 animate-bounce" />
+          </CardFooter>
         </Card>
 
         <Spacer y={1} />
@@ -424,7 +434,7 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <NextRaiseCard entries={entries} inflationType={inflationType} />
+        <NextRaiseSection entries={entries} inflationType={inflationType} />
 
         <Spacer y={1} />
 
