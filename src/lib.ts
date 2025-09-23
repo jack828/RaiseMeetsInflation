@@ -57,6 +57,8 @@ export const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
 export const multiplierToPct = (multiplier: number): number =>
   (multiplier - 1) * 100
 
+export const pctDifference = (a: number, b: number) => ((a - b) / b) * 100
+
 // what the fuck why so fucking stupid
 export const getSelectionValue = (selection: Selection) => {
   if (typeof selection === 'string') {
@@ -66,4 +68,3 @@ export const getSelectionValue = (selection: Selection) => {
     return selection.keys().toArray()[0]
   }
 }
-

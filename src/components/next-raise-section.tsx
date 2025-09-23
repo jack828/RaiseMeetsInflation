@@ -1,17 +1,22 @@
 import { useMemo } from 'react'
 import { Card, CardHeader, CardBody, CardFooter } from '@heroui/react'
 
-import { compoundMultiplier, multiplierToPct, SalaryEntry } from '@/lib'
+import {
+  compoundMultiplier,
+  multiplierToPct,
+  pctDifference,
+  SalaryEntry
+} from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { InflationType } from '@/app/page'
-import { trendIcon } from './trend-icon'
+import { trendIcon } from '@/components/trend-icon'
 import {
   SummaryCard,
   SummaryCardGrid,
   SummaryCardLeft,
   SummaryCardRight
-} from './summary-card-grid'
+} from '@/components/summary-card-grid'
 
 interface NextRaiseSectionProps {
   entries: SalaryEntry[]
@@ -38,8 +43,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
     )
     const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
     const inflationPct = multiplierToPct(inflationMultiplier)
-    const askRestorePct =
-      ((inflationTargetSalary - lastAmount) / lastAmount) * 100
+    const askRestorePct = pctDifference(inflationTargetSalary, lastAmount)
 
     const payGrowthMultiplier = compoundMultiplier(
       lastDate,

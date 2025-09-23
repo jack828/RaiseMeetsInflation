@@ -1,21 +1,26 @@
 import { useMemo } from 'react'
 import { Card, CardHeader, CardBody, CardFooter } from '@heroui/react'
+import {
+  ArrowDownIcon,
+  CalendarDateRangeIcon
+} from '@heroicons/react/24/outline'
 
-import { compoundMultiplier, multiplierToPct, SalaryEntry } from '@/lib'
+import {
+  compoundMultiplier,
+  multiplierToPct,
+  pctDifference,
+  SalaryEntry
+} from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { InflationType } from '@/app/page'
-import { trendIcon } from './trend-icon'
+import { trendIcon } from '@/components/trend-icon'
 import {
   SummaryCard,
   SummaryCardGrid,
   SummaryCardLeft,
   SummaryCardRight
-} from './summary-card-grid'
-import {
-  ArrowDownIcon,
-  CalendarDateRangeIcon
-} from '@heroicons/react/24/outline'
+} from '@/components/summary-card-grid'
 
 interface SummarySectionProps {
   entries: SalaryEntry[]
@@ -45,14 +50,13 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       datasets.getInflationValue(inflationType)
     )
     const inflationMatched = first.amount * inflationMultiplier
-    const realPct = ((last.amount - inflationMatched) / inflationMatched) * 100
+    const realPct = pctDifference(last.amount, inflationMatched)
 
     const overallAdjustedChange = realPct
     const overallInflation = multiplierToPct(inflationMultiplier)
     const exampleInflationValue = (1 * inflationMultiplier).toFixed(2)
 
-    const overallNominalChange =
-      ((last.amount - first.amount) / first.amount) * 100
+    const overallNominalChange = pctDifference(last.amount, first.amount)
     return {
       timePeriod,
       averagePayRiseOverPeriod,

@@ -16,32 +16,21 @@ import {
   Spacer,
   Tooltip,
   Divider,
-  CardFooter
 } from '@heroui/react'
-
 import {
-  ArrowDownIcon,
-  CalendarDateRangeIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
-
 import {
   compoundMultiplier,
   multiplierToPct,
+  pctDifference,
   SalaryEntry,
   toSalaryEntry
 } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { NextRaiseSection } from '@/components/next-raise-section'
-import { trendIcon } from '@/components/trend-icon'
 import { SalaryInputCard } from '@/components/salary-input-card'
-import {
-  SummaryCard,
-  SummaryCardGrid,
-  SummaryCardLeft,
-  SummaryCardRight
-} from '@/components/summary-card-grid'
 import { SummarySection } from '@/components/summary-section'
 
 export type InflationType = 'cpih' | 'cpi'
@@ -69,7 +58,7 @@ export default function SalaryInflationPage() {
       if (i === 0) return { ...entry } as SalaryEntry
       const prev = arr[i - 1]
       // nominal % change vs previous
-      const prevPct = ((entry.amount - prev.amount) / prev.amount) * 100
+      const prevPct = pctDifference(entry.amount, prev.amount)
 
       // compound inflation from prev.date to entry.date
       const inflationMultiplier = compoundMultiplier(
@@ -81,8 +70,7 @@ export default function SalaryInflationPage() {
       const inflationPct = multiplierToPct(inflationMultiplier)
 
       // real % difference of actual new salary vs inflation-matched value
-      const realPct =
-        ((entry.amount - inflationMatched) / inflationMatched) * 100
+      const realPct = pctDifference(entry.amount, inflationMatched)
 
       return {
         ...entry,
