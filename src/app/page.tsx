@@ -160,7 +160,6 @@ export default function SalaryInflationPage() {
           <CardBody>
             <ul className="list-disc list-inside">
               {[
-                'Input salary or hourly wage + hours/week',
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'inflation metric selector',
                 'mobile layout',

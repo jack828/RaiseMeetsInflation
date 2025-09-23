@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { add, parse } from 'date-fns'
 import { InflationDataEntry } from './datasets'
+import { Selection } from '@heroui/react'
 
 // TODO refactor out
 const monthKey = (isoMonth: string): InflationDataEntry =>
@@ -55,3 +56,14 @@ export const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
 
 export const multiplierToPct = (multiplier: number): number =>
   (multiplier - 1) * 100
+
+// what the fuck why so fucking stupid
+export const getSelectionValue = (selection: Selection) => {
+  if (typeof selection === 'string') {
+    return selection
+  }
+  if (selection instanceof Set) {
+    return selection.keys().toArray()[0]
+  }
+}
+

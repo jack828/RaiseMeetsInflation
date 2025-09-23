@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -6,28 +6,30 @@ import {
   CardBody,
   Select,
   SelectItem,
-  Input
+  Input,
+  Switch,
+  Selection
 } from '@heroui/react'
 
-import { SalaryEntry, toSalaryEntry } from '@/lib'
+import { getSelectionValue, SalaryEntry, toSalaryEntry } from '@/lib'
 
 interface NextRaiseCardProps {
   handleAddSalary: (entry: SalaryEntry) => void
 }
 
 const months = [
-  { key: '01', label: 'January' },
-  { key: '02', label: 'February' },
-  { key: '03', label: 'March' },
-  { key: '04', label: 'April' },
-  { key: '05', label: 'May' },
-  { key: '06', label: 'June' },
-  { key: '07', label: 'July' },
-  { key: '08', label: 'August' },
-  { key: '09', label: 'September' },
-  { key: '10', label: 'October' },
-  { key: '11', label: 'November' },
-  { key: '12', label: 'December' }
+  { key: '01', label: '01 - January' },
+  { key: '02', label: '02 - February' },
+  { key: '03', label: '03 - March' },
+  { key: '04', label: '04 - April' },
+  { key: '05', label: '05 - May' },
+  { key: '06', label: '06 - June' },
+  { key: '07', label: '07 - July' },
+  { key: '08', label: '08 - August' },
+  { key: '09', label: '09 - September' },
+  { key: '10', label: '10 - October' },
+  { key: '11', label: '11 - November' },
+  { key: '12', label: '12 - December' }
 ]
 
 const MIN_YEAR = 2015
@@ -38,20 +40,80 @@ const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
 export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
   handleAddSalary
 }) => {
-  const [inputMonth, setInputMonth] = useState('')
-  const [inputYear, setInputYear] = useState('')
-  const [amount, setAmount] = useState('')
+  const [inputMonth, setInputMonth] = useState<Selection>(new Set([]))
+  const [inputYear, setInputYear] = useState<Selection>(new Set([]))
+  const [annual, setAnnual] = useState('')
+  const [hourlyRate, setHourlyRate] = useState('')
+  const [hoursPerWeek, setHoursPerWeek] = useState('')
+  const [isHourly, setIsHourly] = useState(true)
+
+  const parseNumberInput = (raw: string) => {
+    const n = Number(raw.replace(/[,£\s]/g, ''))
+    return Number.isNaN(n) ? null : n
+  }
+
+  const computedAnnual = useMemo(() => {
+    const rate = parseNumberInput(hourlyRate)
+    const hours = parseNumberInput(hoursPerWeek)
+    if (!rate || !hours) return null
+    return rate * hours * 52
+  }, [hourlyRate, hoursPerWeek])
 
   const addEntry = () => {
-    if (!inputMonth || !inputYear || !amount) return
-    const amt = Number(amount.replace(/[,£\s]/g, ''))
-    if (Number.isNaN(amt) || amt <= 0) return
-    const date = `${inputYear}-${inputMonth}`
-    handleAddSalary(toSalaryEntry(date, amt))
+    if (!getSelectionValue(inputMonth) || !getSelectionValue(inputYear)) return
 
-    setInputMonth('')
-    setInputYear('')
-    setAmount('')
+    let amount: number | null = null
+    if (!isHourly) {
+      if (!annual) return
+      amount = parseNumberInput(annual)
+    } else {
+      if (!hourlyRate || !hoursPerWeek) return
+      amount = computedAnnual
+    }
+    if (amount === null || amount === undefined) return
+    if (Number.isNaN(amount) || amount <= 0) return
+
+    const date = `${getSelectionValue(inputYear)}-${getSelectionValue(inputMonth)}`
+    handleAddSalary(toSalaryEntry(date, amount))
+
+    setInputMonth(new Set([]))
+    setInputYear(new Set([]))
+    setAnnual('')
+    setHourlyRate('')
+    setHoursPerWeek('')
+  }
+
+  const isDisabled = useMemo(() => {
+    if (!getSelectionValue(inputMonth) || !getSelectionValue(inputYear)) {
+      return true
+    }
+    if (!isHourly) {
+      const amt = parseNumberInput(annual)
+      console.log({ amt, annual })
+      return !annual || amt === null || amt <= 0
+    } else {
+      return (
+        !hourlyRate ||
+        !hoursPerWeek ||
+        computedAnnual === null ||
+        computedAnnual <= 0
+      )
+    }
+  }, [
+    inputMonth,
+    inputYear,
+    isHourly,
+    hourlyRate,
+    hoursPerWeek,
+    annual,
+    computedAnnual
+  ])
+
+  const handleToggle = (selected: boolean) => {
+    setIsHourly(selected)
+    setHourlyRate('')
+    setHoursPerWeek('')
+    setAnnual('')
   }
 
   return (
@@ -62,56 +124,112 @@ export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
         </CardHeader>
 
         <CardBody>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="flex items-center">
               <Select
                 className="max-w-xs"
                 label="Month"
                 placeholder="-- Select Month --"
-                value={inputMonth}
-                onChange={(e) => setInputMonth(e.target.value)}
+                selectedKeys={inputMonth}
+                onSelectionChange={setInputMonth}
               >
                 {months.map((month) => (
                   <SelectItem key={month.key}>{month.label}</SelectItem>
                 ))}
               </Select>
+            </div>
+            <div className="flex items-center">
               <Select
                 className="max-w-xs"
                 label="Year"
                 placeholder="-- Select Year --"
-                value={inputYear}
-                onChange={(e) => setInputYear(e.target.value)}
+                selectedKeys={inputYear}
+                onSelectionChange={setInputYear}
               >
-                {years.map((years) => (
-                  <SelectItem key={years.key}>{years.label}</SelectItem>
+                {years.map((year) => (
+                  <SelectItem key={year.key}>{year.label}</SelectItem>
                 ))}
               </Select>
             </div>
-            <div>
-              <Input
-                type="text"
-                label="Salary"
-                placeholder="9001"
-                value={amount}
-                onChange={(e: any) => setAmount(e.target.value)}
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-small">£</span>
-                  </div>
-                }
-                variant="bordered"
-              />
+            <div className="flex items-center justify-center space-x-2">
+              <p
+                className="cursor-pointer"
+                onClick={() => handleToggle(!isHourly)}
+              >
+                Annual
+              </p>
+              <Switch
+                isSelected={isHourly}
+                onValueChange={handleToggle}
+                size="md"
+                color="primary"
+              >
+                Hourly
+              </Switch>
             </div>
-            <div className="md:col-span-2">
+            <div className="flex items-center">
               <Button
                 color="primary"
                 onPress={addEntry}
                 className="w-full"
-                isDisabled={!inputMonth || !inputYear || !amount}
+                isDisabled={isDisabled}
               >
                 Add Entry
               </Button>
             </div>
+            {isHourly ? (
+              <>
+                <div className="md:col-span-2">
+                  <Input
+                    type="text"
+                    label="Hourly Rate"
+                    placeholder="15.00"
+                    value={hourlyRate}
+                    description={
+                      computedAnnual && (
+                        <span className="text-default-400 text-small">
+                          That&apos;s £{computedAnnual?.toLocaleString()} per
+                          year.
+                        </span>
+                      )
+                    }
+                    onValueChange={setHourlyRate}
+                    startContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">£</span>
+                      </div>
+                    }
+                    variant="bordered"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Input
+                    type="number"
+                    label="Hours per Week"
+                    placeholder="40"
+                    value={hoursPerWeek}
+                    onValueChange={setHoursPerWeek}
+                    variant="bordered"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="md:col-span-4">
+                <Input
+                  type="text"
+                  label="Annual Salary"
+                  placeholder="9,001"
+                  value={annual}
+                  onValueChange={setAnnual}
+                  startContent={
+                    <div className="pointer-events-none flex items-center">
+                      <span className="text-default-400 text-small">£</span>
+                    </div>
+                  }
+                  variant="bordered"
+                />
+              </div>
+            )}
           </div>
         </CardBody>
       </Card>
