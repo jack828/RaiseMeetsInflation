@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { add, parse } from 'date-fns'
-import { InflationDataEntry } from './app/page'
+import { InflationDataEntry } from './datasets'
 
 // TODO refactor out
 const monthKey = (isoMonth: string): InflationDataEntry =>
