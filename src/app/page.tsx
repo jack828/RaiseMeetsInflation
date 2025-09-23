@@ -28,7 +28,7 @@ import {
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
 import { NextRaiseSection } from '@/components/next-raise-section'
-import { SalaryInputCard } from '@/components/salary-input-card'
+import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
 
 export type InflationType = 'cpih' | 'cpi'
@@ -142,7 +142,7 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <SalaryInputCard handleAddSalary={onAddSalary} />
+        <SalaryInputSection handleAddSalary={onAddSalary} />
 
         <Spacer y={1} />
 

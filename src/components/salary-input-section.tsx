@@ -13,7 +13,7 @@ import {
 
 import { getSelectionValue, SalaryEntry, toSalaryEntry } from '@/lib'
 
-interface NextRaiseCardProps {
+interface SalaryInputSectionProps {
   handleAddSalary: (entry: SalaryEntry) => void
 }
 
@@ -37,7 +37,7 @@ const years = new Array(new Date().getFullYear() - MIN_YEAR + 1)
   .fill(0)
   .map((_, i) => ({ key: `${i + MIN_YEAR}`, label: `${i + MIN_YEAR}` }))
 
-export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
+export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
   handleAddSalary
 }) => {
   const [inputMonth, setInputMonth] = useState<Selection>(new Set([]))
