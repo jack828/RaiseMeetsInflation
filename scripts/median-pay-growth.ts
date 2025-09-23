@@ -35,4 +35,3 @@ await fs.writeFile(
   path.join(import.meta.dirname, '../src/data/median-pay-growth.json'),
   JSON.stringify(data, null, 2)
 )
-

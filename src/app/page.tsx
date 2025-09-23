@@ -15,11 +15,9 @@ import {
   Chip,
   Spacer,
   Tooltip,
-  Divider,
+  Divider
 } from '@heroui/react'
-import {
-  TrashIcon
-} from '@heroicons/react/24/outline'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import {
   compoundMultiplier,
   multiplierToPct,
