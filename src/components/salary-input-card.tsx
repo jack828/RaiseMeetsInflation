@@ -120,38 +120,34 @@ export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
     <>
       <Card className="shadow-lg">
         <CardHeader>
-          <h1 className="text-2xl font-semibold">Salary vs Inflation</h1>
+          <h1 className="text-2xl font-semibold">Pay Input</h1>
         </CardHeader>
 
         <CardBody>
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="flex items-center">
-              <Select
-                className="max-w-xs"
-                label="Month"
-                placeholder="-- Select Month --"
-                selectedKeys={inputMonth}
-                onSelectionChange={setInputMonth}
-              >
-                {months.map((month) => (
-                  <SelectItem key={month.key}>{month.label}</SelectItem>
-                ))}
-              </Select>
-            </div>
-            <div className="flex items-center">
-              <Select
-                className="max-w-xs"
-                label="Year"
-                placeholder="-- Select Year --"
-                selectedKeys={inputYear}
-                onSelectionChange={setInputYear}
-              >
-                {years.map((year) => (
-                  <SelectItem key={year.key}>{year.label}</SelectItem>
-                ))}
-              </Select>
-            </div>
-            <div className="flex items-center justify-center space-x-2">
+          <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
+            <Select
+              className="col-span-2 sm:col-span-1"
+              label="Month"
+              placeholder="-- Select Month --"
+              selectedKeys={inputMonth}
+              onSelectionChange={setInputMonth}
+            >
+              {months.map((month) => (
+                <SelectItem key={month.key}>{month.label}</SelectItem>
+              ))}
+            </Select>
+            <Select
+              className="col-span-2 sm:col-span-1"
+              label="Year"
+              placeholder="-- Select Year --"
+              selectedKeys={inputYear}
+              onSelectionChange={setInputYear}
+            >
+              {years.map((year) => (
+                <SelectItem key={year.key}>{year.label}</SelectItem>
+              ))}
+            </Select>
+            <div className="flex items-center justify-center space-x-2 md:col-span-1 col-span-2">
               <p
                 className="cursor-pointer"
                 onClick={() => handleToggle(!isHourly)}
@@ -167,7 +163,7 @@ export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
                 Hourly
               </Switch>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center order-last md:order-[unset] md:col-span-1 col-span-2">
               <Button
                 color="primary"
                 onPress={addEntry}
@@ -179,48 +175,21 @@ export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
             </div>
             {isHourly ? (
               <>
-                <div className="md:col-span-2">
-                  <Input
-                    type="text"
-                    label="Hourly Rate"
-                    placeholder="15.00"
-                    value={hourlyRate}
-                    description={
-                      computedAnnual && (
-                        <span className="text-default-400 text-small">
-                          That&apos;s £{computedAnnual?.toLocaleString()} per
-                          year.
-                        </span>
-                      )
-                    }
-                    onValueChange={setHourlyRate}
-                    startContent={
-                      <div className="pointer-events-none flex items-center">
-                        <span className="text-default-400 text-small">£</span>
-                      </div>
-                    }
-                    variant="bordered"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Input
-                    type="number"
-                    label="Hours per Week"
-                    placeholder="40"
-                    value={hoursPerWeek}
-                    onValueChange={setHoursPerWeek}
-                    variant="bordered"
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="md:col-span-4">
                 <Input
                   type="text"
-                  label="Annual Salary"
-                  placeholder="9,001"
-                  value={annual}
-                  onValueChange={setAnnual}
+                  label="Hourly Rate"
+                  className="col-span-2 sm:col-span-1 md:col-span-2"
+                  placeholder="15.00"
+                  value={hourlyRate}
+                  description={
+                    computedAnnual && (
+                      <span className="text-default-400 text-small">
+                        That&apos;s £{computedAnnual?.toLocaleString()} per
+                        year.
+                      </span>
+                    )
+                  }
+                  onValueChange={setHourlyRate}
                   startContent={
                     <div className="pointer-events-none flex items-center">
                       <span className="text-default-400 text-small">£</span>
@@ -228,7 +197,31 @@ export const SalaryInputCard: React.FC<NextRaiseCardProps> = ({
                   }
                   variant="bordered"
                 />
-              </div>
+                <Input
+                  type="number"
+                  label="Hours per Week"
+                  className="col-span-2 sm:col-span-1 md:col-span-2"
+                  placeholder="40"
+                  value={hoursPerWeek}
+                  onValueChange={setHoursPerWeek}
+                  variant="bordered"
+                />
+              </>
+            ) : (
+              <Input
+                type="text"
+                className="md:col-span-4 col-span-2"
+                label="Annual Salary"
+                placeholder="9,001"
+                value={annual}
+                onValueChange={setAnnual}
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">£</span>
+                  </div>
+                }
+                variant="bordered"
+              />
             )}
           </div>
         </CardBody>
