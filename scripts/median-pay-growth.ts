@@ -26,7 +26,7 @@ const data = rows.slice(headerIndex + 1).reduce(
     }
     return acc
   },
-  {} as Record<string, {}>
+  {} as Record<string, object>
 )
 
 console.log(data)

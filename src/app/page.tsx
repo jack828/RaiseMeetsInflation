@@ -185,18 +185,18 @@ export default function SalaryInflationPage() {
           <CardBody>
             Looking for a pay rise? Not sure what you should argue for? This is
             what RaiseMeetsInflation is designed for. Put in your salary history
-            and you'll see how it compares to inflation.
+            and you’ll see how it compares to inflation.
             <br />
             Why should you care about inflation?
             <br />
             Because if your employer is giving you _less_ than inflation, it
-            means the spending power of your pay is going down. In "real" terms,
-            that means you're getting a **pay cut**, for doing the exact same
+            means the spending power of your pay is going down. In “real” terms,
+            that means you’re getting a **pay cut**, for doing the exact same
             thing.
             <br />
             This site is about finding that longer term trend to better argue
             with your employer. Has it been long awaited for you to get a boost?
-            Or, are you just curious just how well you've performed by switching
+            Or, are you just curious just how well you’ve performed by switching
             jobs?
           </CardBody>
         </Card>
@@ -236,7 +236,7 @@ export default function SalaryInflationPage() {
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     This is the amount that your salary has increased, ignoring
-                    inflation, over the all the entries you've provided.
+                    inflation, over the all the entries you’ve provided.
                   </div>
                 </div>
                 <div className="p-4 bg-default-100 rounded flex items-center">
@@ -282,7 +282,7 @@ export default function SalaryInflationPage() {
                     The cumulative average increase in pay over the UK,
                     pro-rated to the time period you’ve provided.
                     <br />
-                    Generally, this is how much everyone else's salary has
+                    Generally, this is how much everyone else’s salary has
                     increased over the same time.
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function SalaryInflationPage() {
                           How your new salary compares to the inflation-matched
                           value.
                           <br />
-                          This is the "real" spending power change in your
+                          This is the “real” spending power change in your
                           salary.
                           <br /> Negative values are a <strong>PAY CUT</strong>.
                         </div>

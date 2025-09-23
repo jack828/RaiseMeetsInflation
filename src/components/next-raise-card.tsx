@@ -53,7 +53,7 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
       marketTargetSalary,
       payGrowthPct
     }
-  }, [entries])
+  }, [entries, inflationType])
 
   if (!data) {
     return (
@@ -109,7 +109,7 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-default-100 rounded">
               <div className="text-md text-default-700">
-                To match the market median growth, this is what you'd need. It's{' '}
+                To match the market median growth, this is what you’d need. It’s{' '}
                 <strong>
                   {formatters.pct(data.payGrowthPct - data.inflationPct)}
                 </strong>{' '}
