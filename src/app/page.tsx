@@ -161,12 +161,12 @@ export default function SalaryInflationPage() {
             <ul className="list-disc list-inside">
               {[
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
-                'inflation metric selector',
                 'mobile layout',
                 'graph',
                 'smart quotes',
                 'ko-fi',
-                'ads'
+                'ads',
+                'inflation metric selector',
               ].map((item, i) => (
                 <li key={`${i}`}>{item}</li>
               ))}
@@ -211,8 +211,8 @@ export default function SalaryInflationPage() {
             <h2 className="text-lg font-medium">Summary</h2>
           </CardHeader>
           <CardBody>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:divide-none divide-y divide-dashed">
+              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     Based on your chosen inflation metric, over {timePeriod}{' '}
@@ -231,7 +231,7 @@ export default function SalaryInflationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     This is the amount that your salary has increased, ignoring
@@ -253,7 +253,7 @@ export default function SalaryInflationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     Factoring in inflation to your salary history, this is how
@@ -275,7 +275,7 @@ export default function SalaryInflationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
                 <div className="p-4 bg-default-100 rounded">
                   <div className="text-md text-default-700">
                     The cumulative average increase in pay over the UK,
