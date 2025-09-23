@@ -77,8 +77,8 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
       </CardHeader>
 
       <CardBody>
-        <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:divide-none divide-y divide-dashed">
+          <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:pb-0 pb-4 space-y-4 space-y-reverse flex flex-col-reverse">
             <div className="p-4 bg-default-100 rounded">
               <div className="text-md text-default-700">
                 Salary required now to restore the purchasing power of your last
@@ -106,7 +106,7 @@ export const NextRaiseCard: React.FC<NextRaiseCardProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="md:grid md:grid-cols-2 md:gap-4 md:space-y-0 space-y-4 space-y-reverse flex flex-col-reverse">
             <div className="p-4 bg-default-100 rounded">
               <div className="text-md text-default-700">
                 To match the market median growth, this is what you’d need. It’s{' '}
