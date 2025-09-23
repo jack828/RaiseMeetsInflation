@@ -42,6 +42,7 @@ import {
   SummaryCardLeft,
   SummaryCardRight
 } from '@/components/summary-card-grid'
+import { SummarySection } from '@/components/summary-section'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -104,62 +105,6 @@ export default function SalaryInflationPage() {
   const removeEntry = (id: string) =>
     setEntries((s) => s.filter((r) => r.id !== id))
 
-  const overallNominalChange = useMemo(() => {
-    if (entries.length < 2) {
-      return 0
-    }
-
-    const first = entries[0].amount
-    const last = entries[entries.length - 1].amount
-    const pct = ((last - first) / first) * 100
-    return pct
-  }, [entries])
-
-  const [overallAdjustedChange, overallInflation, exampleInflationValue] =
-    useMemo(() => {
-      if (entries.length < 2) {
-        return [0, 0, '1.00']
-      }
-
-      const inflationMultiplier = compoundMultiplier(
-        entries[0].datetime,
-        entries[entries.length - 1].datetime,
-        datasets.getInflationValue(inflationType)
-      )
-      const inflationMatched = entries[0].amount * inflationMultiplier
-      const last = entries[entries.length - 1].amount
-      const realPct = ((last - inflationMatched) / inflationMatched) * 100
-
-      return [
-        realPct,
-        multiplierToPct(inflationMultiplier),
-        (1 * inflationMultiplier).toFixed(2)
-      ]
-    }, [entries])
-
-  const timePeriod = useMemo(() => {
-    if (entries.length < 2) {
-      return '-'
-    }
-    return formatters.timePeriod(
-      entries[0].datetime,
-      entries[entries.length - 1].datetime
-    )
-  }, [entries])
-
-  const averagePayRiseOverPeriod = useMemo(() => {
-    if (entries.length < 2) {
-      return 0
-    }
-
-    const payGrowthMultiplier = compoundMultiplier(
-      entries[0].datetime,
-      entries[entries.length - 1].datetime,
-      datasets.getPayGrowthValue
-    )
-    return multiplierToPct(payGrowthMultiplier)
-  }, [entries])
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -217,115 +162,7 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <Card className="shadow">
-          <CardHeader>
-            <h2 className="text-lg font-medium">Summary</h2>
-          </CardHeader>
-          <CardBody>
-            <SummaryCardGrid>
-              <SummaryCard>
-                <SummaryCardLeft>
-                  <div className="text-md text-default-700">
-                    Based on your chosen inflation metric, over {timePeriod}{' '}
-                    inflation has risen by {formatters.pct(overallInflation)}.
-                    This means that £1 then has the same purchasing power as £
-                    {exampleInflationValue} today.
-                  </div>
-                </SummaryCardLeft>
-                <SummaryCardRight>
-                  <div className="flex-1">
-                    <div className="text-xl font-bold">{timePeriod}</div>
-                  </div>
-                  <div className="ml-3 w-6 flex items-center justify-center">
-                    <CalendarDateRangeIcon />
-                  </div>
-                </SummaryCardRight>
-              </SummaryCard>
-
-              <SummaryCard>
-                <SummaryCardLeft>
-                  <div className="text-md text-default-700">
-                    This is the amount that your salary has increased, ignoring
-                    inflation, over the all the entries you’ve provided.
-                  </div>
-                </SummaryCardLeft>
-                <SummaryCardRight>
-                  <div className="flex-1">
-                    <div className="text-sm text-default-600">
-                      Overall Nominal Change
-                    </div>
-                    <div className="text-xl font-bold">
-                      {formatters.pct(overallNominalChange)}
-                    </div>
-                  </div>
-                  <div className="ml-3 w-6 flex items-center justify-center">
-                    {trendIcon(overallNominalChange)}
-                  </div>
-                </SummaryCardRight>
-              </SummaryCard>
-
-              <SummaryCard>
-                <SummaryCardLeft>
-                  <div className="text-md text-default-700">
-                    Factoring in inflation to your salary history, this is how
-                    much it has changed in terms of real spending power.
-                  </div>
-                </SummaryCardLeft>
-                <SummaryCardRight>
-                  <div className="flex-1">
-                    <div className="text-sm text-default-600">
-                      Overall Adjusted Change
-                    </div>
-                    <div className="text-xl font-bold">
-                      {formatters.pct(overallAdjustedChange)}
-                    </div>
-                  </div>
-                  <div className="ml-3 w-6 flex items-center justify-center">
-                    {trendIcon(overallAdjustedChange)}
-                  </div>
-                </SummaryCardRight>
-              </SummaryCard>
-
-              <SummaryCard>
-                <SummaryCardLeft>
-                  <div className="text-md text-default-700">
-                    The cumulative average increase in pay over the UK,
-                    pro-rated to the time period you’ve provided.
-                    <br />
-                    Generally, this is how much everyone else’s salary has
-                    increased over the same time.
-                  </div>
-                </SummaryCardLeft>
-                <SummaryCardRight>
-                  <div className="flex-1">
-                    <div className="text-sm text-default-600">
-                      Average Pay Rise Over Period
-                    </div>
-                    <div className="text-xl font-bold">
-                      {formatters.pct(averagePayRiseOverPeriod)}
-                    </div>
-                    <div className="text-sm text-default-500">
-                      {formatters.pct(
-                        averagePayRiseOverPeriod - overallInflation
-                      )}{' '}
-                      inflation adjusted
-                    </div>
-                  </div>
-                  <div className="ml-3 w-6 flex items-center justify-center">
-                    {trendIcon(averagePayRiseOverPeriod)}
-                  </div>
-                </SummaryCardRight>
-              </SummaryCard>
-            </SummaryCardGrid>
-          </CardBody>
-
-          <CardFooter className="flex flex-col justify-center space-y-2">
-            <p>
-              Want to see how much you should ask for next? Scroll down and see.
-            </p>
-            <ArrowDownIcon className="size-6 animate-bounce" />
-          </CardFooter>
-        </Card>
+        <SummarySection entries={entries} inflationType={inflationType} />
 
         <Spacer y={1} />
 
