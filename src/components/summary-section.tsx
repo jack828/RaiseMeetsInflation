@@ -32,7 +32,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   inflationType
 }) => {
   const data = useMemo(() => {
-    if (!entries || entries.length === 0) return null
+    if (!entries || entries.length < 2) return null
 
     const first = entries[0]
     const last = entries[entries.length - 1]
