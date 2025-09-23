@@ -177,6 +177,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
               <>
                 <Input
                   type="text"
+                  inputMode="decimal"
                   label="Hourly Rate"
                   className="col-span-2 sm:col-span-1 md:col-span-2"
                   placeholder="15.00"
@@ -199,6 +200,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
                 />
                 <Input
                   type="number"
+                  inputMode="decimal"
                   label="Hours per Week"
                   className="col-span-2 sm:col-span-1 md:col-span-2"
                   placeholder="40"
@@ -210,8 +212,9 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
             ) : (
               <Input
                 type="text"
-                className="md:col-span-4 col-span-2"
+                inputMode="decimal"
                 label="Annual Salary"
+                className="md:col-span-4 col-span-2"
                 placeholder="9,001"
                 value={annual}
                 onValueChange={setAnnual}
