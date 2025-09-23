@@ -65,7 +65,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       exampleInflationValue,
       overallNominalChange
     }
-  }, [entries])
+  }, [entries, inflationType])
 
   if (!data) {
     return (
