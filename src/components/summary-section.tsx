@@ -4,6 +4,7 @@ import {
   ArrowDownIcon,
   CalendarDateRangeIcon
 } from '@heroicons/react/24/outline'
+import { clsx } from 'clsx'
 
 import {
   compoundMultiplier,
@@ -57,13 +58,16 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     const exampleInflationValue = (1 * inflationMultiplier).toFixed(2)
 
     const overallNominalChange = pctDifference(last.amount, first.amount)
+    const overallNominalChangeAmount = last.amount - first.amount
+
     return {
       timePeriod,
       averagePayRiseOverPeriod,
       overallAdjustedChange,
       overallInflation,
       exampleInflationValue,
-      overallNominalChange
+      overallNominalChange,
+      overallNominalChangeAmount
     }
   }, [entries, inflationType])
 
@@ -92,10 +96,11 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           <SummaryCard>
             <SummaryCardLeft>
               <div className="text-md text-default-700">
-                Based on your chosen inflation metric, over {data.timePeriod}{' '}
-                inflation has risen by {formatters.pct(data.overallInflation)}.
-                This means that £1 then has the same purchasing power as £
-                {data.exampleInflationValue} today.
+                Based on your chosen inflation metric, over{' '}
+                <strong>{data.timePeriod}</strong> inflation has risen by{' '}
+                <strong>{formatters.pct(data.overallInflation)}</strong>. This
+                means that <strong>£1</strong> then has the same purchasing
+                power as £<strong>{data.exampleInflationValue}</strong> today.
               </div>
             </SummaryCardLeft>
             <SummaryCardRight>
@@ -122,6 +127,16 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
                 </div>
                 <div className="text-xl font-bold">
                   {formatters.pct(data.overallNominalChange)}
+                </div>
+                <div
+                  className={clsx(
+                    'text-sm',
+                    data.overallNominalChangeAmount > 0
+                      ? 'text-success-700 dark:text-success'
+                      : 'text-danger-600 dark:text-danger-500'
+                  )}
+                >
+                  or {formatters.currency(data.overallNominalChangeAmount)}
                 </div>
               </div>
               <div className="ml-3 w-6 flex items-center justify-center">
@@ -165,7 +180,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
             <SummaryCardRight>
               <div className="flex-1">
                 <div className="text-sm text-default-600">
-                  Average Pay Rise Over Period
+                  UK Median Pay Rise
                 </div>
                 <div className="text-xl font-bold">
                   {formatters.pct(data.averagePayRiseOverPeriod)}
