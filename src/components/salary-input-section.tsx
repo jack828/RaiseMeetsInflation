@@ -45,7 +45,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
   const [annual, setAnnual] = useState('')
   const [hourlyRate, setHourlyRate] = useState('')
   const [hoursPerWeek, setHoursPerWeek] = useState('')
-  const [isHourly, setIsHourly] = useState(true)
+  const [isHourly, setIsHourly] = useState(false)
 
   const parseNumberInput = (raw: string) => {
     const n = Number(raw.replace(/[,£\s]/g, ''))
