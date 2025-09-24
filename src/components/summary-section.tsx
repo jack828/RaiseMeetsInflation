@@ -87,7 +87,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       <CardHeader>
         <h2 className="text-lg font-medium">Summary</h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="animate-flip-down">
         <SummaryCardGrid>
           <SummaryCard>
             <SummaryCardLeft>
@@ -185,7 +185,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         </SummaryCardGrid>
       </CardBody>
 
-      <CardFooter className="flex flex-col justify-center space-y-2">
+      <CardFooter className="flex flex-col justify-center space-y-2 animate-flip-down">
         <p>
           Want to see how much you should ask for next? Scroll down and see.
         </p>

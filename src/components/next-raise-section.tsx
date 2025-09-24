@@ -86,7 +86,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
         <h1 className="text-lg font-medium">Your next raise</h1>
       </CardHeader>
 
-      <CardBody>
+      <CardBody className="animate-flip-down">
         <SummaryCardGrid>
           <SummaryCard>
             <SummaryCardLeft>
@@ -149,7 +149,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
         </SummaryCardGrid>
       </CardBody>
 
-      <CardFooter>
+      <CardFooter className="animate-flip-down">
         <p className="text-sm text-default-500">
           This may be different to other sites, as we look at the inflation
           since your last wage - not just in the last 12 months. This should be
