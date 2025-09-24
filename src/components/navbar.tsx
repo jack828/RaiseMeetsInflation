@@ -1,5 +1,6 @@
 'use client'
 
+import { Raleway } from 'next/font/google'
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'
 import {
   Navbar,
@@ -9,6 +10,11 @@ import {
   Switch
 } from '@heroui/react'
 import { useTheme } from 'next-themes'
+import { clsx } from 'clsx'
+
+const raleway = Raleway({
+  subsets: ['latin']
+})
 
 export default function NavigationBar() {
   const { theme, systemTheme, setTheme } = useTheme()
@@ -16,7 +22,9 @@ export default function NavigationBar() {
   return (
     <Navbar isBordered className="shadow-sm">
       <NavbarBrand>
-        <p className="text-xl font-bold">Raise Meets Inflation</p>
+        <p className={clsx('text-3xl font-bold', raleway.className)}>
+          Raise Meets Inflation
+        </p>
       </NavbarBrand>
 
       <NavbarContent justify="end">
