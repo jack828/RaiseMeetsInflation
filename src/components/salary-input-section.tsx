@@ -181,6 +181,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
                   className="col-span-2 sm:col-span-1 md:col-span-2"
                   placeholder="15.00"
                   value={hourlyRate}
+                  classNames={{ helperWrapper: computedAnnual && 'animate-flip-down' }}
                   description={
                     computedAnnual && (
                       <span className="text-default-400 text-small">
