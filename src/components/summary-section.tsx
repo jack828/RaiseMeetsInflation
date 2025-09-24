@@ -189,7 +189,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         <p>
           Want to see how much you should ask for next? Scroll down and see.
         </p>
-        <ArrowDownIcon className="size-6 animate-bounce" />
+        <ArrowDownIcon className="size-8 animate-bounce" />
       </CardFooter>
     </Card>
   )
