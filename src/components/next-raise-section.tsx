@@ -44,6 +44,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
     const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
     const inflationPct = multiplierToPct(inflationMultiplier)
     const askRestorePct = pctDifference(inflationTargetSalary, lastAmount)
+    const askRestoreAmount = inflationTargetSalary - lastAmount
 
     const payGrowthMultiplier = compoundMultiplier(
       lastDate,
@@ -52,6 +53,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
     )
     const marketTargetSalary = +(lastAmount * payGrowthMultiplier).toFixed(2)
     const payGrowthPct = multiplierToPct(payGrowthMultiplier)
+    const payGrowthAmount = marketTargetSalary - lastAmount
 
     return {
       timePeriod,
@@ -60,8 +62,10 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
       inflationTargetSalary,
       inflationPct,
       askRestorePct,
+      askRestoreAmount,
       marketTargetSalary,
-      payGrowthPct
+      payGrowthPct,
+      payGrowthAmount
     }
   }, [entries, inflationType])
 
@@ -108,7 +112,8 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
                 </div>
 
                 <div className="text-sm text-default-500">
-                  {formatters.pct(data.askRestorePct)}
+                  {formatters.pct(data.askRestorePct)} or{' '}
+                  {formatters.currency(data.askRestoreAmount)}
                 </div>
               </div>
               <div className="ml-3 w-6 flex items-center justify-center">
@@ -120,7 +125,8 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
           <SummaryCard>
             <SummaryCardLeft>
               <div className="text-md text-default-700">
-                To match the market median growth, this is what you’d need. It’s{' '}
+                To match the market median growth since your last raise, this is
+                what you’d need. It’s{' '}
                 <strong>
                   {formatters.pct(data.payGrowthPct - data.inflationPct)}
                 </strong>{' '}
@@ -138,7 +144,8 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
                 </div>
 
                 <div className="text-sm text-default-500">
-                  {formatters.pct(data.payGrowthPct)}
+                  {formatters.pct(data.payGrowthPct)} or{' '}
+                  {formatters.currency(data.payGrowthAmount)}
                 </div>
               </div>
               <div className="ml-3 w-6 flex items-center justify-center">
@@ -153,7 +160,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
         <p className="text-sm text-default-500">
           This may be different to other sites, as we look at the inflation
           since your last wage - not just in the last 12 months. This should be
-          more accurate to what you should get.
+          more accurate to what you should ask for.
         </p>
       </CardFooter>
     </Card>
