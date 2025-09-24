@@ -1,35 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Button,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Chip,
-  Spacer,
-  Tooltip,
-  Divider
-} from '@heroui/react'
-import { TrashIcon } from '@heroicons/react/24/outline'
-import {
-  compoundMultiplier,
-  multiplierToPct,
-  pctDifference,
-  SalaryEntry,
-  toSalaryEntry
-} from '@/lib'
-import * as formatters from '@/formatters'
-import * as datasets from '@/datasets'
+import { useState } from 'react'
+import { Card, CardHeader, CardBody, Spacer, Divider } from '@heroui/react'
+import { SalaryEntry, toSalaryEntry } from '@/lib'
 import { NextRaiseSection } from '@/components/next-raise-section'
 import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
+import { SalaryHistorySection } from '@/components/salary-history-section'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -50,36 +27,6 @@ export default function SalaryInflationPage() {
     toSalaryEntry('2025-02', 83000)
   ])
 
-  // derive table rows with comparisons vs previous
-  const rows = useMemo(() => {
-    return entries.map((entry, i, arr) => {
-      if (i === 0) return { ...entry } as SalaryEntry
-      const prev = arr[i - 1]
-      // nominal % change vs previous
-      const prevPct = pctDifference(entry.amount, prev.amount)
-
-      // compound inflation from prev.date to entry.date
-      const inflationMultiplier = compoundMultiplier(
-        prev.datetime,
-        entry.datetime,
-        datasets.getInflationValue(inflationType)
-      )
-      const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
-      const inflationPct = multiplierToPct(inflationMultiplier)
-
-      // real % difference of actual new salary vs inflation-matched value
-      const realPct = pctDifference(entry.amount, inflationMatched)
-
-      return {
-        ...entry,
-        prevPct,
-        inflationMatched,
-        inflationPct,
-        realPct
-      } as SalaryEntry
-    })
-  }, [entries])
-
   const onAddSalary = (entry: SalaryEntry) => {
     setEntries((s) =>
       s
@@ -88,7 +35,7 @@ export default function SalaryInflationPage() {
     )
   }
 
-  const removeEntry = (id: string) =>
+  const onRemoveSalary = (id: string) =>
     setEntries((s) => s.filter((r) => r.id !== id))
 
   return (
@@ -103,6 +50,8 @@ export default function SalaryInflationPage() {
             <ul className="list-disc list-inside">
               {[
                 'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
+                'fonts',
+                'nicer styling',
                 'graph',
                 'ko-fi',
                 'ads',
@@ -150,108 +99,11 @@ export default function SalaryInflationPage() {
 
         <Spacer y={1} />
 
-        <Card className="shadow">
-          <CardHeader>
-            <h2 className="text-lg font-medium">Salary History</h2>
-          </CardHeader>
-          <CardBody className="font-mono">
-            <Table aria-label="Salary history table" removeWrapper>
-              <TableHeader>
-                <TableColumn>Date</TableColumn>
-                <TableColumn>Salary</TableColumn>
-                <TableColumn>Pay Difference</TableColumn>
-                <TableColumn>Inflation over period</TableColumn>
-                <TableColumn>
-                  <Tooltip
-                    content={
-                      <div className="px-1 py-2">
-                        <div className="text-small">
-                          What you would have gotten if your employer ONLY
-                          matched to inflation. <br />
-                          That is, no real loss of spending power in your wage.
-                        </div>
-                      </div>
-                    }
-                    showArrow={true}
-                  >
-                    Inflation‑matched Salary 🛈
-                  </Tooltip>
-                </TableColumn>
-                <TableColumn>
-                  <Tooltip
-                    content={
-                      <div className="px-1 py-2">
-                        <div className="text-small">
-                          How your new salary compares to the inflation-matched
-                          value.
-                          <br />
-                          This is the “real” spending power change in your
-                          salary.
-                          <br /> Negative values are a <strong>PAY CUT</strong>.
-                        </div>
-                      </div>
-                    }
-                    showArrow={true}
-                  >
-                    Difference vs Inflation 🛈
-                  </Tooltip>
-                </TableColumn>
-                <TableColumn hideHeader>Actions</TableColumn>
-              </TableHeader>
-              <TableBody emptyContent="Nothing to see here. Put your current salary and the date you got it into the box above.">
-                {rows.map((r, idx) => (
-                  <TableRow key={r.id}>
-                    <TableCell>{r.date}</TableCell>
-                    <TableCell className="font-semibold">
-                      {formatters.currency(r.amount)}
-                    </TableCell>
-                    <TableCell>
-                      {idx === 0 ? '—' : formatters.pct(r.prevPct)}
-                    </TableCell>
-                    <TableCell>
-                      {idx === 0 ? '—' : `${r.inflationPct?.toFixed(2)}%`}
-                    </TableCell>
-                    <TableCell>
-                      {idx === 0
-                        ? '—'
-                        : formatters.currency(r.inflationMatched)}
-                    </TableCell>
-                    <TableCell>
-                      {idx === 0 ? (
-                        '—'
-                      ) : (
-                        <Chip
-                          color={
-                            (r.realPct ?? 0) === 0
-                              ? 'default'
-                              : (r.realPct ?? 0) >= 0
-                                ? 'success'
-                                : 'danger'
-                          }
-                          variant="flat"
-                          size="sm"
-                        >
-                          {formatters.pct(r.realPct)}
-                        </Chip>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        isIconOnly
-                        color="danger"
-                        variant="light"
-                        size="sm"
-                        onPress={() => removeEntry(r.id)}
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardBody>
-        </Card>
+        <SalaryHistorySection
+          entries={entries}
+          inflationType={inflationType}
+          handleRemoveSalary={onRemoveSalary}
+        />
 
         <Spacer y={1} />
 

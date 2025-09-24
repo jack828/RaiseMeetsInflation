@@ -8,8 +8,10 @@ export const currency = (v?: number) =>
         currency: 'GBP'
       }).format(v)
 
-export const pct = (v?: number) =>
-  v == null ? '—' : `${v === 0 ? '±' : v >= 0 ? '+' : ''}${v.toFixed(2)}%`
+export const pct = (v?: number, showPlusMinus: boolean = true) =>
+  v === null || typeof v === 'undefined'
+    ? '—'
+    : `${showPlusMinus ? (v === 0 ? '±' : v >= 0 ? '+' : '') : ''}${v.toFixed(2)}%`
 
 export const timePeriod = (start: Date, end: Date) => {
   const d = intervalToDuration({
