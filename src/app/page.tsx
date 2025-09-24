@@ -50,6 +50,7 @@ export default function SalaryInflationPage() {
             <ul className="list-disc list-inside">
               {[
                 'fonts',
+                'how to use copy rewrite',
                 'nicer styling',
                 'graph',
                 'ko-fi',
