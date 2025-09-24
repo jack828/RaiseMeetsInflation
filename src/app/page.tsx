@@ -49,7 +49,6 @@ export default function SalaryInflationPage() {
           <CardBody>
             <ul className="list-disc list-inside">
               {[
-                'transition summary to visible when adding entries - "add 2 or more entries to see more information"',
                 'fonts',
                 'nicer styling',
                 'graph',
