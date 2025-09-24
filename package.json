@@ -16,6 +16,7 @@
     "@heroui/react": "^2.8.4",
     "@opennextjs/cloudflare": "^1.8.4",
     "@tailwindcss/postcss": "^4.1.13",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.18",
     "framer-motion": "^12.23.15",

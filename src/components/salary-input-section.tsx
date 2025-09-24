@@ -89,7 +89,6 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
     }
     if (!isHourly) {
       const amt = parseNumberInput(annual)
-      console.log({ amt, annual })
       return !annual || amt === null || amt <= 0
     } else {
       return (

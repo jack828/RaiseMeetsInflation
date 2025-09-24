@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -14,6 +14,7 @@ import {
   Tooltip
 } from '@heroui/react'
 import { TrashIcon } from '@heroicons/react/24/outline'
+import { clsx } from 'clsx'
 import {
   compoundMultiplier,
   multiplierToPct,
@@ -35,6 +36,9 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
   inflationType,
   handleRemoveSalary
 }) => {
+  const [removingRowIds, setRemovingRowIds] = useState<Record<string, boolean>>(
+    {}
+  )
   const rows = useMemo(() => {
     return entries.map((entry, i, arr) => {
       if (i === 0) return { ...entry } as SalaryEntry
@@ -62,8 +66,18 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
         realPct
       }
     })
-  }, [entries, inflationType])
+  }, [entries, inflationType, removingRowIds])
 
+  const handleAnimationEnd = (id: string) => () => {
+    handleRemoveSalary(id)
+    setRemovingRowIds((ids) => {
+      delete ids[id]
+      return ids
+    })
+  }
+  const onRemove = (id: string) => {
+    setRemovingRowIds((ids) => ({ ...ids, [id]: true }))
+  }
   return (
     <Card className="shadow">
       <CardHeader>
@@ -113,47 +127,76 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
             <TableColumn hideHeader>Actions</TableColumn>
           </TableHeader>
           <TableBody emptyContent="Nothing to see here. Put your current salary and the date you got it into the box above.">
-            {rows.map((r, idx) => (
-              <TableRow key={r.id} className="animate-flip-up">
-                <TableCell>{r.date}</TableCell>
-                <TableCell className="font-semibold">
-                  {formatters.currency(r.amount)}
-                </TableCell>
-                <TableCell>{formatters.pct(r.prevPct)}</TableCell>
-                <TableCell>{formatters.pct(r.inflationPct, false)}</TableCell>
-                <TableCell>{formatters.currency(r.inflationMatched)}</TableCell>
-                <TableCell>
-                  {idx === 0 ? (
-                    '—'
-                  ) : (
-                    <Chip
-                      color={
-                        (r.realPct ?? 0) === 0
-                          ? 'default'
-                          : (r.realPct ?? 0) >= 0
-                            ? 'success'
-                            : 'danger'
-                      }
-                      variant="flat"
-                      size="sm"
-                    >
-                      {formatters.pct(r.realPct)}
-                    </Chip>
+            {rows.map((r, idx) => {
+              const isRemoving = removingRowIds[r.id]
+              const cellClassName = clsx(
+                'transition-all duration-300 ease-in-out',
+                isRemoving && 'py-0 opacity-0 text-[0px]'
+              )
+              return (
+                <TableRow
+                  key={r.id}
+                  className={clsx(
+                    isRemoving &&
+                      'animate-flip-down animate-reverse animate-once overflow-hidden bg-red-100' +
+                        'transition-all duration-300 ease-in-out'
                   )}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    isIconOnly
-                    color="danger"
-                    variant="light"
-                    size="sm"
-                    onPress={() => handleRemoveSalary(r.id)}
-                  >
-                    <TrashIcon className="w-5 h-5" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  onAnimationEnd={handleAnimationEnd(r.id)}
+                >
+                  <TableCell className={cellClassName}>{r.date}</TableCell>
+                  <TableCell className={clsx(cellClassName, 'font-semibold')}>
+                    {formatters.currency(r.amount)}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {formatters.pct(r.prevPct)}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {formatters.pct(r.inflationPct, false)}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {formatters.currency(r.inflationMatched)}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {idx === 0 ? (
+                      '—'
+                    ) : (
+                      <Chip
+                        color={
+                          (r.realPct ?? 0) === 0
+                            ? 'default'
+                            : (r.realPct ?? 0) >= 0
+                              ? 'success'
+                              : 'danger'
+                        }
+                        variant="flat"
+                        size="sm"
+                        className={clsx(
+                          'transition-all duration-300 ease-in-out',
+                          isRemoving && 'h-0 text-[0px]'
+                        )}
+                      >
+                        {formatters.pct(r.realPct)}
+                      </Chip>
+                    )}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    <Button
+                      isIconOnly
+                      color="danger"
+                      variant="light"
+                      size="sm"
+                      className={clsx(
+                        'transition-height duration-300 ease-in-out',
+                        isRemoving && 'h-0'
+                      )}
+                      onPress={() => onRemove(r.id)}
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </CardBody>
