@@ -62,7 +62,7 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
         realPct
       }
     })
-  }, [entries])
+  }, [entries, inflationType])
 
   return (
     <Card className="shadow">
@@ -119,15 +119,9 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                 <TableCell className="font-semibold">
                   {formatters.currency(r.amount)}
                 </TableCell>
-                <TableCell>
-                  {formatters.pct(r.prevPct)}
-                </TableCell>
-                <TableCell>
-                  {formatters.pct(r.inflationPct, false)}
-                </TableCell>
-                <TableCell>
-                  {formatters.currency(r.inflationMatched)}
-                </TableCell>
+                <TableCell>{formatters.pct(r.prevPct)}</TableCell>
+                <TableCell>{formatters.pct(r.inflationPct, false)}</TableCell>
+                <TableCell>{formatters.currency(r.inflationMatched)}</TableCell>
                 <TableCell>
                   {idx === 0 ? (
                     '—'
