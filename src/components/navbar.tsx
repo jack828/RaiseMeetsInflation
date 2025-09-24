@@ -22,7 +22,9 @@ export default function NavigationBar() {
   return (
     <Navbar isBordered className="shadow-sm">
       <NavbarBrand>
-        <p className={clsx('text-3xl font-bold', raleway.className)}>
+        <p
+          className={clsx('text-2xl sm:text-3xl font-bold', raleway.className)}
+        >
           Raise Meets Inflation
         </p>
       </NavbarBrand>
