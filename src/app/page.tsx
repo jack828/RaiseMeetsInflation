@@ -9,6 +9,7 @@ import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
 import { Advert } from '@/components/advert'
 import Image from 'next/image'
+import { InformationCircleIcon } from '@heroicons/react/24/outline'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -51,7 +52,6 @@ export default function SalaryInflationPage() {
           <CardBody>
             <ul className="list-disc list-inside">
               {[
-                'how to use copy rewrite',
                 'opengraph / metadata',
                 'icon/logo',
                 'nicer styling',
@@ -66,30 +66,35 @@ export default function SalaryInflationPage() {
           </CardBody>
         </Card>*/}
 
-        <Card className="shadow">
-          <CardHeader>
-            <h1 className="text-2xl font-semibold">How to use</h1>
+        <Card className="shadow p-4">
+          <CardHeader className="">
+            <h2 className="text-2xl font-semibold">How to Use</h2>
           </CardHeader>
 
-          <CardBody>
-            Looking for a pay rise? Not sure what you should argue for? This is
-            what RaiseMeetsInflation is designed for. Put in your salary history
-            and you’ll see how it compares to inflation.
-            <br />
-            Why should you care about inflation?
-            <br />
-            Because if your employer is giving you _less_ than inflation, it
-            means the spending power of your pay is going down. In “real” terms,
-            that means you’re getting a **pay cut**, for doing the exact same
-            thing.
-            <br />
-            This site is about finding that longer term trend to better argue
-            with your employer. Has it been long awaited for you to get a boost?
-            Or, are you just curious just how well you’ve performed by switching
-            jobs?
+          <CardBody className="space-y-2">
+            <p>
+              Want a pay‑rise but aren’t sure what to ask
+              for? RaiseMeetsInflation lets you enter your salary history and
+              instantly compares it to inflation, market‑wide median growth, and
+              the raise you’d earn if you negotiated today.
+            </p>
+
+            <p>
+              <strong>Why inflation matters:</strong> If your salary grows
+              slower than inflation, your purchasing power actually declines. In
+              real terms, you are taking a <strong>pay cut</strong> while doing
+              the same work.
+            </p>
+
+            <p>
+              This tool highlights long‑term trends so you can make a
+              data‑driven case to your employer. Whether you’re waiting for a
+              long‑overdue boost or just curious how your earnings stack up
+              after a job change, the calculator shows you exactly where you
+              stand.
+            </p>
           </CardBody>
         </Card>
-
         <Advert />
 
         <SalaryInputSection handleAddSalary={onAddSalary} />
@@ -108,9 +113,9 @@ export default function SalaryInflationPage() {
 
         <Advert />
 
-        <Card className="shadow">
+        <Card className="shadow p-4">
           <CardHeader>
-            <h2 className="text-lg font-medium">Visualization</h2>
+            <h2 className="text-2xl font-semibold">Visualisation</h2>
           </CardHeader>
           <CardBody>
             <div className="h-64 bg-default-100 rounded-lg flex items-center justify-center">
@@ -121,7 +126,7 @@ export default function SalaryInflationPage() {
 
         <Advert />
 
-        <Card className="shadow">
+        <Card className="shadow p-4">
           <CardHeader>
             <h1 className="text-2xl font-semibold">DISCLAIMER</h1>
           </CardHeader>

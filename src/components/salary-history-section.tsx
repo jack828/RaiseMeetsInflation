@@ -79,11 +79,11 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
     setRemovingRowIds((ids) => ({ ...ids, [id]: true }))
   }
   return (
-    <Card className="shadow">
+    <Card className="shadow p-4">
       <CardHeader>
-        <h2 className="text-lg font-medium">Salary History</h2>
+        <h2 className="text-2xl font-semibold">Salary History</h2>
       </CardHeader>
-      <CardBody className="font-mono">
+      <CardBody className="font-mono px-2">
         <Table aria-label="Salary history table" removeWrapper>
           <TableHeader>
             <TableColumn>Date</TableColumn>

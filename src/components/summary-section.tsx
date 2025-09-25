@@ -73,9 +73,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
 
   if (!data) {
     return (
-      <Card className="shadow">
+      <Card className="shadow p-4">
         <CardHeader>
-          <h1 className="text-lg font-medium">Summary</h1>
+          <h2 className="text-2xl font-semibold">Summary</h2>
         </CardHeader>
         <CardBody>
           <div className="text-sm text-default-600">
@@ -87,9 +87,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   }
 
   return (
-    <Card className="shadow">
+    <Card className="shadow p-4">
       <CardHeader>
-        <h2 className="text-lg font-medium">Summary</h2>
+        <h2 className="text-2xl font-semibold">Summary</h2>
       </CardHeader>
       <CardBody className="animate-flip-down">
         <SummaryCardGrid>

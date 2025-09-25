@@ -71,9 +71,9 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
 
   if (!data) {
     return (
-      <Card className="shadow">
+      <Card className="shadow p-4">
         <CardHeader>
-          <h1 className="text-lg font-medium">Your next raise</h1>
+          <h2 className="text-2xl font-semibold">Your next raise</h2>
         </CardHeader>
         <CardBody>
           <div className="text-sm text-default-600">
@@ -85,9 +85,9 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
   }
 
   return (
-    <Card className="shadow">
+    <Card className="shadow p-4">
       <CardHeader>
-        <h1 className="text-lg font-medium">Your next raise</h1>
+        <h2 className="text-2xl font-semibold">Your next raise</h2>
       </CardHeader>
 
       <CardBody className="animate-flip-down">
