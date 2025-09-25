@@ -212,13 +212,20 @@ export default function SalaryInflationPage() {
 
         <Divider />
 
-        <div className="flex flex-col items-center text-sm text-default-500 text-center">
-          <Image
-            src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png"
-            alt="Support me on Ko-fi"
-            width={980 / 5}
-            height={198 / 5}
-          />
+        <div className="flex flex-col items-center text-sm text-default-500 text-center space-y-1">
+          <a
+            href="https://ko-fi.com/jack828"
+            target="_blank"
+            rel="noopener nofollow"
+            className="text-blue-500 hover:text-blue-600 hover:underline"
+          >
+            <Image
+              src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png"
+              alt="Support me on Ko-fi"
+              width={980 / 5}
+              height={198 / 5}
+            />
+          </a>
           <span>
             <a href="https://jackburgess.dev">Jack Burgess</a> &copy;{' '}
             {new Date().getFullYear()}

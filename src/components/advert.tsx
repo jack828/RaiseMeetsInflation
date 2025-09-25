@@ -10,7 +10,7 @@ export const Advert = () => {
         <a
           href="https://ko-fi.com/jack828"
           target="_blank"
-          rel="noopener"
+          rel="noopener nofollow"
           className="text-blue-500 hover:text-blue-600 hover:underline"
         >
           Consider supporting me on Ko-fi instead{' '}
