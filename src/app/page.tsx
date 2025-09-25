@@ -7,6 +7,7 @@ import { NextRaiseSection } from '@/components/next-raise-section'
 import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
+import Image from 'next/image'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -208,14 +209,23 @@ export default function SalaryInflationPage() {
         </Card>
 
         <Divider />
-        <p className="text-sm text-default-500 text-center">
-          <a href="https://jackburgess.dev">Jack Burgess</a> &copy;{' '}
-          {new Date().getFullYear()}
+
+        <div className="flex flex-col items-center text-sm text-default-500 text-center">
+          <Image
+            src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png"
+            alt="Support me on Ko-fi"
+            width={980 / 5}
+            height={198 / 5}
+          />
+          <span>
+            <a href="https://jackburgess.dev">Jack Burgess</a> &copy;{' '}
+            {new Date().getFullYear()}
+          </span>
           <br />
-          Powered my tea, marmalade, and curiosity.
+          <span>Powered my tea, marmalade, and curiosity.</span>
           <br />
           <span className="font-mono">&lt;/website&gt;</span>
-        </p>
+        </div>
       </div>
     </div>
   )
