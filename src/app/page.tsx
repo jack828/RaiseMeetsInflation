@@ -7,6 +7,7 @@ import { NextRaiseSection } from '@/components/next-raise-section'
 import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
+import { Advert } from '@/components/advert'
 import Image from 'next/image'
 
 export type InflationType = 'cpih' | 'cpi'
@@ -89,15 +90,13 @@ export default function SalaryInflationPage() {
           </CardBody>
         </Card>
 
-        <Spacer y={1} />
+        <Advert />
 
         <SalaryInputSection handleAddSalary={onAddSalary} />
 
-        <Spacer y={1} />
-
         <SummarySection entries={entries} inflationType={inflationType} />
 
-        <Spacer y={1} />
+        <Advert />
 
         <SalaryHistorySection
           entries={entries}
@@ -105,11 +104,9 @@ export default function SalaryInflationPage() {
           handleRemoveSalary={onRemoveSalary}
         />
 
-        <Spacer y={1} />
-
         <NextRaiseSection entries={entries} inflationType={inflationType} />
 
-        <Spacer y={1} />
+        <Advert />
 
         <Card className="shadow">
           <CardHeader>
@@ -122,7 +119,7 @@ export default function SalaryInflationPage() {
           </CardBody>
         </Card>
 
-        <Spacer y={1} />
+        <Advert />
 
         <Card className="shadow">
           <CardHeader>
