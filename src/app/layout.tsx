@@ -20,8 +20,25 @@ const robotoMono = Roboto_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Raise Meets Inflation',
-  description: 'See how your pay matches up to inflation.'
+  title: {
+    template: '%s | Raise Meets Inflation',
+    default: 'Raise Meets Inflation'
+  },
+  description: 'See how your pay matches up to inflation.',
+  authors: [{ name: 'Jack Burgess', url: 'https://jackburgess.dev' }],
+  creator: 'Jack Burgess',
+  openGraph: {
+    type: 'website'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false
+  },
+  verification: {
+    // TODO
+    // google: 'google'
+  }
 }
 
 export default function RootLayout({
