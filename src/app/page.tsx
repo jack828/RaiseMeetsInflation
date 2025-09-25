@@ -128,14 +128,16 @@ export default function SalaryInflationPage() {
 
         <Card className="shadow p-4">
           <CardHeader>
-            <h1 className="text-2xl font-semibold">DISCLAIMER</h1>
+            <h1 className="text-2xl font-semibold">Disclaimer & Sources</h1>
           </CardHeader>
 
           <CardBody className="space-y-2">
             <p className="text-sm text-default-600">
               This tool provides illustrative, approximate comparisons between
-              your nominal salary changes and UK inflation. Results are
-              indicative only.
+              your nominal salary changes and UK inflation. Information provided
+              on this site is for illustrative purposes only. Do not make any
+              major financial decisions without consulting a qualified
+              specialist.
             </p>
 
             <ul className="list-disc ml-5 text-sm text-default-600">
