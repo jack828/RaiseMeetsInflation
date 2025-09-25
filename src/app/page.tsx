@@ -1,15 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardHeader, CardBody, Spacer, Divider } from '@heroui/react'
+import { Card, CardHeader, CardBody, Divider } from '@heroui/react'
+import Image from 'next/image'
 import { SalaryEntry, toSalaryEntry } from '@/lib'
 import { NextRaiseSection } from '@/components/next-raise-section'
 import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
 import { Advert } from '@/components/advert'
-import Image from 'next/image'
-import { InformationCircleIcon } from '@heroicons/react/24/outline'
 
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
@@ -56,7 +55,6 @@ export default function SalaryInflationPage() {
                 'icon/logo',
                 'nicer styling',
                 'graph',
-                'ko-fi',
                 'ads',
                 'inflation metric selector'
               ].map((item, i) => (
