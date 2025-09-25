@@ -214,6 +214,14 @@ export default function SalaryInflationPage() {
 
         <div className="flex flex-col items-center text-sm text-default-500 text-center space-y-1">
           <a
+            href="https://www.flaticon.com/free-icons/inflation"
+            rel="noopener noreferrer nofollow"
+            title="inflation icons"
+            className='text-xs text-default-300'
+          >
+            Inflation icons created by Tempo_doloe - Flaticon
+          </a>
+          <a
             href="https://ko-fi.com/jack828"
             target="_blank"
             rel="noopener nofollow"
