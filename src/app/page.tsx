@@ -14,21 +14,24 @@ import { DisclaimerSection } from '@/components/disclaimer-section'
 export type InflationType = 'cpih' | 'cpi'
 const inflationType: InflationType = 'cpih'
 
+const devEntries: SalaryEntry[] = [
+  toSalaryEntry('2016-07', 15392),
+  toSalaryEntry('2016-09', 15392),
+  toSalaryEntry('2017-06', 17000),
+  toSalaryEntry('2018-08', 24992.76),
+  toSalaryEntry('2019-05', 27000),
+  toSalaryEntry('2019-06', 29000),
+  toSalaryEntry('2021-04', 34000),
+  toSalaryEntry('2022-01', 40000),
+  toSalaryEntry('2022-06', 50000),
+  toSalaryEntry('2023-08', 75000),
+  toSalaryEntry('2024-01', 78187.5),
+  toSalaryEntry('2025-02', 83000)
+]
+const initialEntries = process.env.NODE_ENV === 'development' ? devEntries : []
+
 export default function SalaryInflationPage() {
-  const [entries, setEntries] = useState<SalaryEntry[]>([
-    toSalaryEntry('2016-07', 15392),
-    toSalaryEntry('2016-09', 15392),
-    toSalaryEntry('2017-06', 17000),
-    toSalaryEntry('2018-08', 24992.76),
-    toSalaryEntry('2019-05', 27000),
-    toSalaryEntry('2019-06', 29000),
-    toSalaryEntry('2021-04', 34000),
-    toSalaryEntry('2022-01', 40000),
-    toSalaryEntry('2022-06', 50000),
-    toSalaryEntry('2023-08', 75000),
-    toSalaryEntry('2024-01', 78187.5),
-    toSalaryEntry('2025-02', 83000)
-  ])
+  const [entries, setEntries] = useState<SalaryEntry[]>(initialEntries)
 
   const onAddSalary = (entry: SalaryEntry) => {
     setEntries((s) =>
