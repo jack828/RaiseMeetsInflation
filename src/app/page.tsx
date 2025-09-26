@@ -214,7 +214,7 @@ export default function SalaryInflationPage() {
 
         <div className="flex flex-col items-center text-sm text-default-500 text-center space-y-1">
           <a
-            href="https://www.flaticon.com/free-icons/inflation"
+            href="https://www.flaticon.com/free-icon/money_9318493?term=inflation&page=1&position=75&origin=tag&related_id=9318493"
             rel="noopener noreferrer nofollow"
             title="inflation icons"
             className='text-xs text-default-300'
