@@ -108,7 +108,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
     computedAnnual
   ])
 
-  const handleEnter = (event: KeyboardEvent) => {
+  const handleEnter = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !isDisabled) {
       addEntry()
     }
