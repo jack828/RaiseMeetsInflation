@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   description: 'See how your pay matches up to inflation.',
   authors: [{ name: 'Jack Burgess', url: 'https://jackburgess.dev' }],
   creator: 'Jack Burgess',
+  metadataBase: new URL('https://raisemeetsinflation.jack.tf'),
   openGraph: {
     type: 'website'
   },
