@@ -13,6 +13,9 @@ import inflationData from '@/data/inflation-uk.json' assert { type: 'json' }
   .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
 import payGrowthData from '@/data/median-pay-growth.json' assert { type: 'json' }
 import { InflationType } from './app/page'
+import metadata from '@/data/metadata.json' assert { type: 'json' }
+
+export { metadata }
 
 export type InflationDataEntry = keyof typeof inflationData
 

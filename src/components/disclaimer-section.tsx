@@ -1,5 +1,6 @@
+import * as datasets from '@/datasets'
 import { Card, CardHeader, CardBody } from '@heroui/react'
-//
+
 export const DisclaimerSection: React.FC = () => {
   return (
     <Card className="shadow p-4">
@@ -26,6 +27,10 @@ export const DisclaimerSection: React.FC = () => {
             Inflation data sourced from the UK Office for National Statistics
             (ONS):
             <div className="mt-1 space-y-1">
+              <span className="italic">
+                Last updated {datasets.metadata.inflation.lastUpdated}.
+              </span>
+              <br />
               <a
                 className="text-primary-600"
                 href="https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55o/mm23"
@@ -50,6 +55,10 @@ export const DisclaimerSection: React.FC = () => {
             Pay growth data sourced from the UK Office for National Statistics
             (ONS):
             <div className="mt-1 space-y-1">
+              <span className="italic">
+                Last updated {datasets.metadata.payGrowth.lastUpdated}.
+              </span>
+              <br />
               <a
                 className="text-primary-600"
                 href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/realtimeinformationstatisticsreferencetablenonseasonallyadjusted"
@@ -80,9 +89,9 @@ export const DisclaimerSection: React.FC = () => {
         </ul>
 
         <p className="text-sm text-default-600">
-          Data last updated on TODO DATE. Some figures take time to release and
-          therefore may be out of date until the data sources used publish new
-          versions.
+          Some figures take time to release and therefore may be out of date
+          until the data sources used publish new versions. The time we updated
+          our data for each of the used datasets is mentioned above.
         </p>
       </CardBody>
     </Card>

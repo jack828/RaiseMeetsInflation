@@ -52,8 +52,6 @@ export default function SalaryInflationPage() {
           <CardBody>
             <ul className="list-disc list-inside">
               {[
-                'opengraph / metadata',
-                'icon/logo',
                 'nicer styling',
                 'graph',
                 'ads',
