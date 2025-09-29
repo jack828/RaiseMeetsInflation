@@ -33,10 +33,24 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   inflationType
 }) => {
   const data = useMemo(() => {
-    if (!entries || entries.length < 2) return null
-
+    if (!entries || entries.length === 0) {
+      return {
+        showSummary: false,
+        timePeriod: '6 years 9 months',
+        averagePayRiseOverPeriod: 12.69,
+        overallAdjustedChange: 10.02,
+        overallInflation: 10.8,
+        exampleInflationValue: 1.11,
+        overallNominalChange: 22.5,
+        overallNominalChangeAmount: 420.69
+      }
+    }
+    const showSummary = entries.length >= 2
     const first = entries[0]
-    const last = entries[entries.length - 1]
+    const last = showSummary
+      ? entries[entries.length - 1]
+      : { datetime: new Date(), amount: first.amount }
+
     const timePeriod = formatters.timePeriod(first.datetime, last.datetime)
     const payGrowthMultiplier = compoundMultiplier(
       first.datetime,
@@ -44,6 +58,10 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       datasets.getPayGrowthValue
     )
     const averagePayRiseOverPeriod = multiplierToPct(payGrowthMultiplier)
+    // I don't like it but it makes the placeholders look reasonable!
+    if (!showSummary) {
+      last.amount *= payGrowthMultiplier
+    }
 
     const inflationMultiplier = compoundMultiplier(
       first.datetime,
@@ -61,6 +79,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     const overallNominalChangeAmount = last.amount - first.amount
 
     return {
+      showSummary,
       timePeriod,
       averagePayRiseOverPeriod,
       overallAdjustedChange,
@@ -71,28 +90,25 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     }
   }, [entries, inflationType])
 
+  // TODO in blur state, make the arrows wiggle between green-up/red-down
   return (
     <Card className="shadow p-4">
       <CardHeader>
         <h2 className="text-2xl font-semibold">Summary</h2>
       </CardHeader>
-      {!data ? (
-        <CardBody>
-          <div className="text-sm text-default-600">
-            Add at least two salary entries to see a summary.
-          </div>
-        </CardBody>
-      ) : (
-        <CardBody className="animate-flip-down">
+      <CardBody>
+        <div className="relative">
           <SummaryCardGrid>
-            <SummaryCard>
+            <SummaryCard
+              className={clsx('transition-all', entries.length > 0 && 'z-30')}
+            >
               <SummaryCardLeft>
                 <div className="text-md text-default-700">
                   Based on your chosen inflation metric, over{' '}
                   <strong>{data.timePeriod}</strong> inflation has risen by{' '}
                   <strong>{formatters.pct(data.overallInflation)}</strong>. This
                   means that <strong>£1</strong> then has the same purchasing
-                  power as £<strong>{data.exampleInflationValue}</strong> today.
+                  power as <strong>£{data.exampleInflationValue}</strong> today.
                 </div>
               </SummaryCardLeft>
               <SummaryCardRight>
@@ -190,13 +206,37 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
               </SummaryCardRight>
             </SummaryCard>
           </SummaryCardGrid>
-        </CardBody>
-      )}
+        </div>
+        <div
+          className={clsx(
+            'absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-200',
+            data.showSummary
+              ? 'opacity-0 pointer-events-none'
+              : 'opacity-100 pointer-events-auto'
+          )}
+        >
+          <div className="w-full h-full flex items-center justify-center rounded-md bg-white/20 backdrop-blur-xs border border-white/10 text-default-900 p-4">
+            <div className="text-center shadow p-6 rounded-md backdrop-blur-3xl">
+              <h4 className="text-lg font-semibold">
+                Add at least two salaries <br className="block md:hidden" />
+                to see more stats
+              </h4>
+              <p className="mt-2 text-sm">
+                {entries.length === 1
+                  ? 'Just one more to go.'
+                  : 'Start by adding your most recent salary.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardBody>
 
       {entries.length > 0 && (
-        <CardFooter className="flex flex-col justify-center space-y-2 animate-flip-down">
+        <CardFooter className="flex flex-col justify-center space-y-2 text-center animate-flip-down">
           <p>
-            Want to see how much you should ask for next? Scroll down and see.
+            Want to see how much you should ask for next?{' '}
+            <br className="block md:hidden" />
+            Scroll down and see.
           </p>
           <ArrowDownIcon className="size-8 animate-bounce" />
         </CardFooter>
