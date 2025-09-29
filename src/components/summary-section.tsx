@@ -71,141 +71,136 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     }
   }, [entries, inflationType])
 
-  if (!data) {
-    return (
-      <Card className="shadow p-4">
-        <CardHeader>
-          <h2 className="text-2xl font-semibold">Summary</h2>
-        </CardHeader>
-        <CardBody>
-          <div className="text-sm text-default-600">
-            Add at least two salary entries to see a summary.
-          </div>
-        </CardBody>
-      </Card>
-    )
-  }
-
   return (
     <Card className="shadow p-4">
       <CardHeader>
         <h2 className="text-2xl font-semibold">Summary</h2>
       </CardHeader>
-      <CardBody className="animate-flip-down">
-        <SummaryCardGrid>
-          <SummaryCard>
-            <SummaryCardLeft>
-              <div className="text-md text-default-700">
-                Based on your chosen inflation metric, over{' '}
-                <strong>{data.timePeriod}</strong> inflation has risen by{' '}
-                <strong>{formatters.pct(data.overallInflation)}</strong>. This
-                means that <strong>£1</strong> then has the same purchasing
-                power as £<strong>{data.exampleInflationValue}</strong> today.
-              </div>
-            </SummaryCardLeft>
-            <SummaryCardRight>
-              <div className="flex-1">
-                <div className="text-xl font-bold">{data.timePeriod}</div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                <CalendarDateRangeIcon />
-              </div>
-            </SummaryCardRight>
-          </SummaryCard>
+      {!data ? (
+        <CardBody>
+          <div className="text-sm text-default-600">
+            Add at least two salary entries to see a summary.
+          </div>
+        </CardBody>
+      ) : (
+        <CardBody className="animate-flip-down">
+          <SummaryCardGrid>
+            <SummaryCard>
+              <SummaryCardLeft>
+                <div className="text-md text-default-700">
+                  Based on your chosen inflation metric, over{' '}
+                  <strong>{data.timePeriod}</strong> inflation has risen by{' '}
+                  <strong>{formatters.pct(data.overallInflation)}</strong>. This
+                  means that <strong>£1</strong> then has the same purchasing
+                  power as £<strong>{data.exampleInflationValue}</strong> today.
+                </div>
+              </SummaryCardLeft>
+              <SummaryCardRight>
+                <div className="flex-1">
+                  <div className="text-xl font-bold">{data.timePeriod}</div>
+                </div>
+                <div className="ml-3 w-6 flex items-center justify-center">
+                  <CalendarDateRangeIcon />
+                </div>
+              </SummaryCardRight>
+            </SummaryCard>
 
-          <SummaryCard>
-            <SummaryCardLeft>
-              <div className="text-md text-default-700">
-                This is the amount that your salary has increased, ignoring
-                inflation, over the all the entries you’ve provided.
-              </div>
-            </SummaryCardLeft>
-            <SummaryCardRight>
-              <div className="flex-1">
-                <div className="text-sm text-default-600">
-                  Overall Nominal Change
+            <SummaryCard>
+              <SummaryCardLeft>
+                <div className="text-md text-default-700">
+                  This is the amount that your salary has increased, ignoring
+                  inflation, over the all the entries you’ve provided.
                 </div>
-                <div className="text-xl font-bold">
-                  {formatters.pct(data.overallNominalChange)}
+              </SummaryCardLeft>
+              <SummaryCardRight>
+                <div className="flex-1">
+                  <div className="text-sm text-default-600">
+                    Overall Nominal Change
+                  </div>
+                  <div className="text-xl font-bold">
+                    {formatters.pct(data.overallNominalChange)}
+                  </div>
+                  <div
+                    className={clsx(
+                      'text-sm',
+                      data.overallNominalChangeAmount > 0
+                        ? 'text-success-700 dark:text-success'
+                        : 'text-danger-600 dark:text-danger-500'
+                    )}
+                  >
+                    or {formatters.currency(data.overallNominalChangeAmount)}
+                  </div>
                 </div>
-                <div
-                  className={clsx(
-                    'text-sm',
-                    data.overallNominalChangeAmount > 0
-                      ? 'text-success-700 dark:text-success'
-                      : 'text-danger-600 dark:text-danger-500'
-                  )}
-                >
-                  or {formatters.currency(data.overallNominalChangeAmount)}
+                <div className="ml-3 w-6 flex items-center justify-center">
+                  {trendIcon(data.overallNominalChange)}
                 </div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                {trendIcon(data.overallNominalChange)}
-              </div>
-            </SummaryCardRight>
-          </SummaryCard>
+              </SummaryCardRight>
+            </SummaryCard>
 
-          <SummaryCard>
-            <SummaryCardLeft>
-              <div className="text-md text-default-700">
-                Factoring in inflation to your salary history, this is how much
-                it has changed in terms of real spending power.
-              </div>
-            </SummaryCardLeft>
-            <SummaryCardRight>
-              <div className="flex-1">
-                <div className="text-sm text-default-600">
-                  Overall Adjusted Change
+            <SummaryCard>
+              <SummaryCardLeft>
+                <div className="text-md text-default-700">
+                  Factoring in inflation to your salary history, this is how
+                  much it has changed in terms of real spending power.
                 </div>
-                <div className="text-xl font-bold">
-                  {formatters.pct(data.overallAdjustedChange)}
+              </SummaryCardLeft>
+              <SummaryCardRight>
+                <div className="flex-1">
+                  <div className="text-sm text-default-600">
+                    Overall Adjusted Change
+                  </div>
+                  <div className="text-xl font-bold">
+                    {formatters.pct(data.overallAdjustedChange)}
+                  </div>
                 </div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                {trendIcon(data.overallAdjustedChange)}
-              </div>
-            </SummaryCardRight>
-          </SummaryCard>
+                <div className="ml-3 w-6 flex items-center justify-center">
+                  {trendIcon(data.overallAdjustedChange)}
+                </div>
+              </SummaryCardRight>
+            </SummaryCard>
 
-          <SummaryCard>
-            <SummaryCardLeft>
-              <div className="text-md text-default-700">
-                The cumulative average increase in pay over the UK, pro-rated to
-                the time period you’ve provided.
-                <br />
-                Generally, this is how much everyone else’s salary has increased
-                over the same time.
-              </div>
-            </SummaryCardLeft>
-            <SummaryCardRight>
-              <div className="flex-1">
-                <div className="text-sm text-default-600">
-                  UK Median Pay Rise
+            <SummaryCard>
+              <SummaryCardLeft>
+                <div className="text-md text-default-700">
+                  The cumulative average increase in pay over the UK, pro-rated
+                  to the time period you’ve provided.
+                  <br />
+                  Generally, this is how much everyone else’s salary has
+                  increased over the same time.
                 </div>
-                <div className="text-xl font-bold">
-                  {formatters.pct(data.averagePayRiseOverPeriod)}
+              </SummaryCardLeft>
+              <SummaryCardRight>
+                <div className="flex-1">
+                  <div className="text-sm text-default-600">
+                    UK Median Pay Rise
+                  </div>
+                  <div className="text-xl font-bold">
+                    {formatters.pct(data.averagePayRiseOverPeriod)}
+                  </div>
+                  <div className="text-sm text-default-500">
+                    {formatters.pct(
+                      data.averagePayRiseOverPeriod - data.overallInflation
+                    )}{' '}
+                    inflation adjusted
+                  </div>
                 </div>
-                <div className="text-sm text-default-500">
-                  {formatters.pct(
-                    data.averagePayRiseOverPeriod - data.overallInflation
-                  )}{' '}
-                  inflation adjusted
+                <div className="ml-3 w-6 flex items-center justify-center">
+                  {trendIcon(data.averagePayRiseOverPeriod)}
                 </div>
-              </div>
-              <div className="ml-3 w-6 flex items-center justify-center">
-                {trendIcon(data.averagePayRiseOverPeriod)}
-              </div>
-            </SummaryCardRight>
-          </SummaryCard>
-        </SummaryCardGrid>
-      </CardBody>
+              </SummaryCardRight>
+            </SummaryCard>
+          </SummaryCardGrid>
+        </CardBody>
+      )}
 
-      <CardFooter className="flex flex-col justify-center space-y-2 animate-flip-down">
-        <p>
-          Want to see how much you should ask for next? Scroll down and see.
-        </p>
-        <ArrowDownIcon className="size-8 animate-bounce" />
-      </CardFooter>
+      {entries.length > 0 && (
+        <CardFooter className="flex flex-col justify-center space-y-2 animate-flip-down">
+          <p>
+            Want to see how much you should ask for next? Scroll down and see.
+          </p>
+          <ArrowDownIcon className="size-8 animate-bounce" />
+        </CardFooter>
+      )}
     </Card>
   )
 }
