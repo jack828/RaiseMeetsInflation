@@ -47,24 +47,14 @@ export default function SalaryInflationPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/*<Card className="shadow">
-          <CardHeader>
-            <h1 className="text-2xl font-semibold">TODO</h1>
-          </CardHeader>
-
-          <CardBody>
-            <ul className="list-disc list-inside">
-              {[
-                'nicer styling',
-                'graph',
-                'ads',
-                'inflation metric selector'
-              ].map((item, i) => (
-                <li key={`${i}`}>{item}</li>
-              ))}
-            </ul>
-          </CardBody>
-        </Card>*/}
+        {/*
+          TODO TODO TODO TODO
+                analytics
+                nicer styling
+                graph
+                ads
+                inflation metric selector
+        */}
 
         <Card className="shadow p-4">
           <CardHeader className="">
