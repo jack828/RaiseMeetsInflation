@@ -14,7 +14,6 @@ import {
 } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
-import { InflationType } from '@/app/page'
 import { trendIcon } from '@/components/trend-icon'
 import {
   SummaryCard,
@@ -25,13 +24,9 @@ import {
 
 interface SummarySectionProps {
   entries: SalaryEntry[]
-  inflationType: InflationType
 }
 
-export const SummarySection: React.FC<SummarySectionProps> = ({
-  entries,
-  inflationType
-}) => {
+export const SummarySection: React.FC<SummarySectionProps> = ({ entries }) => {
   const data = useMemo(() => {
     if (!entries || entries.length === 0) {
       return {
@@ -66,7 +61,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     const inflationMultiplier = compoundMultiplier(
       first.datetime,
       last.datetime,
-      datasets.getInflationValue(inflationType)
+      datasets.getInflationValue
     )
     const inflationMatched = first.amount * inflationMultiplier
     const realPct = pctDifference(last.amount, inflationMatched)
@@ -88,7 +83,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       overallNominalChange,
       overallNominalChangeAmount
     }
-  }, [entries, inflationType])
+  }, [entries])
 
   // TODO in blur state, make the arrows wiggle between green-up/red-down
   return (
@@ -104,8 +99,8 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
             >
               <SummaryCardLeft>
                 <div className="text-md text-default-700">
-                  Based on your chosen inflation metric, over{' '}
-                  <strong>{data.timePeriod}</strong> inflation has risen by{' '}
+                  Over the last <strong>{data.timePeriod}</strong> inflation has
+                  risen by{' '}
                   <strong>{formatters.pct(data.overallInflation)}</strong>. This
                   means that <strong>£1</strong> then has the same purchasing
                   power as <strong>£{data.exampleInflationValue}</strong> today.

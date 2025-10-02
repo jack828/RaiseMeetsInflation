@@ -1,18 +1,5 @@
-import inflationData from '@/data/inflation-uk.json' assert { type: 'json' }
-/*TODO FIXME some dates missing or inaccurate.
- parsed = raw
-  .split('\n')
-  .filter(Boolean)
-  .map((l) => l.split(',').map((c) => c.replaceAll('"', '')))
-  .slice(1)
-  .map((r) => ({
-    date: new Date(`01 ${r[0]}`).toISOString().slice(0, 7),
-    cpih: Number(r[1]),
-    cpi: Number(r[2])
-  }))
-  .reduce((acc, d) => ({ [d.date]: d, ...acc }), {}) */
+import inflationData from '@/data/inflation.json' assert { type: 'json' }
 import payGrowthData from '@/data/median-pay-growth.json' assert { type: 'json' }
-import { InflationType } from './app/page'
 import metadata from '@/data/metadata.json' assert { type: 'json' }
 
 export { metadata }
@@ -22,14 +9,13 @@ export type InflationDataEntry = keyof typeof inflationData
 export type PayGrowthDataEntry = keyof typeof payGrowthData
 
 export const getInflationValue =
-  (type: InflationType = 'cpih') =>
   (key: string) => {
     const inflationEntry = inflationData[key as InflationDataEntry]
-    const inflationTypeValue = inflationEntry?.[type] || 0
-    if (inflationTypeValue === 0) {
+    const inflationValue = inflationEntry?.value || 0
+    if (inflationValue === 0) {
       console.warn('Missing inflation data for', key)
     }
-    return inflationTypeValue
+    return inflationValue
   }
 
 export const getPayGrowthValue = (key: string) => {

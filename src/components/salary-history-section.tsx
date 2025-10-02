@@ -23,17 +23,14 @@ import {
 } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
-import { InflationType } from '@/app/page'
 
 interface SalaryHistorySectionProps {
   entries: SalaryEntry[]
-  inflationType: InflationType
   handleRemoveSalary: (id: string) => void
 }
 
 export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
   entries,
-  inflationType,
   handleRemoveSalary
 }) => {
   const [removingRowIds, setRemovingRowIds] = useState<Record<string, boolean>>(
@@ -50,7 +47,7 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
       const inflationMultiplier = compoundMultiplier(
         prev.datetime,
         entry.datetime,
-        datasets.getInflationValue(inflationType)
+        datasets.getInflationValue
       )
       const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
       const inflationPct = multiplierToPct(inflationMultiplier)
@@ -66,7 +63,7 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
         realPct
       }
     })
-  }, [entries, inflationType, removingRowIds])
+  }, [entries, removingRowIds])
 
   const handleAnimationEnd = (id: string) => () => {
     handleRemoveSalary(id)

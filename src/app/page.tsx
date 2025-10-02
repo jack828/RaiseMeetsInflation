@@ -11,9 +11,6 @@ import { Advert } from '@/components/advert'
 import { Footer } from '@/components/footer'
 import { DisclaimerSection } from '@/components/disclaimer-section'
 
-export type InflationType = 'cpih' | 'cpi'
-const inflationType: InflationType = 'cpih'
-
 const devEntries: SalaryEntry[] = [
   toSalaryEntry('2016-07', 15392),
   toSalaryEntry('2016-09', 15392),
@@ -49,11 +46,12 @@ export default function SalaryInflationPage() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/*
           TODO TODO TODO TODO
-                analytics
-                nicer styling
-                graph
-                ads
-                inflation metric selector
+          inflation/pay growth data updater
+          pagespeed metrics
+          analytics
+          nicer styling
+          graph
+          ads
         */}
 
         <Card className="shadow p-4">
@@ -89,17 +87,16 @@ export default function SalaryInflationPage() {
 
         <SalaryInputSection handleAddSalary={onAddSalary} />
 
-        <SummarySection entries={entries} inflationType={inflationType} />
+        <SummarySection entries={entries} />
 
         <Advert />
 
         <SalaryHistorySection
           entries={entries}
-          inflationType={inflationType}
           handleRemoveSalary={onRemoveSalary}
         />
 
-        <NextRaiseSection entries={entries} inflationType={inflationType} />
+        <NextRaiseSection entries={entries} />
 
         <Advert />
 

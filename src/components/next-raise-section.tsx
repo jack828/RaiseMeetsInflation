@@ -9,7 +9,6 @@ import {
 } from '@/lib'
 import * as formatters from '@/formatters'
 import * as datasets from '@/datasets'
-import { InflationType } from '@/app/page'
 import { trendIcon } from '@/components/trend-icon'
 import {
   SummaryCard,
@@ -20,12 +19,10 @@ import {
 
 interface NextRaiseSectionProps {
   entries: SalaryEntry[]
-  inflationType: InflationType
 }
 
 export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
-  entries,
-  inflationType
+  entries
 }) => {
   const data = useMemo(() => {
     if (!entries || entries.length === 0) return null
@@ -39,7 +36,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
     const inflationMultiplier = compoundMultiplier(
       lastDate,
       now,
-      datasets.getInflationValue(inflationType)
+      datasets.getInflationValue
     )
     const inflationTargetSalary = +(lastAmount * inflationMultiplier).toFixed(2)
     const inflationPct = multiplierToPct(inflationMultiplier)
@@ -67,7 +64,7 @@ export const NextRaiseSection: React.FC<NextRaiseSectionProps> = ({
       payGrowthPct,
       payGrowthAmount
     }
-  }, [entries, inflationType])
+  }, [entries])
 
   if (!data) {
     return (
