@@ -4,7 +4,7 @@ import { InflationDataEntry } from './datasets'
 import { Selection } from '@heroui/react'
 
 // TODO refactor out
-const monthKey = (isoMonth: string): InflationDataEntry =>
+export const monthKey = (isoMonth: string): InflationDataEntry =>
   isoMonth.slice(0, 7) as InflationDataEntry
 
 // Convert annual figure to monthly multiplier
