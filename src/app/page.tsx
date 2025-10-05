@@ -46,9 +46,7 @@ export default function SalaryInflationPage() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/*
           TODO TODO TODO TODO
-          pagespeed metrics
           analytics
-          nicer styling
           graph
           ads
         */}
@@ -61,7 +59,7 @@ export default function SalaryInflationPage() {
           <CardBody className="space-y-2">
             <p>
               Want a pay‑rise but aren’t sure what to ask
-              for? RaiseMeetsInflation lets you enter your salary history and
+              for? RaiseMeetsInflation lets you enter your salary history and
               instantly compares it to inflation, market‑wide median growth, and
               the raise you’d earn if you negotiated today.
             </p>
