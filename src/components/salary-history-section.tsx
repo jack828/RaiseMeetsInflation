@@ -13,7 +13,7 @@ import {
   Chip,
   Tooltip
 } from '@heroui/react'
-import { TrashIcon } from '@heroicons/react/24/outline'
+import { InformationCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
 import {
   compoundMultiplier,
@@ -49,16 +49,16 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
         entry.datetime,
         datasets.getInflationValue
       )
-      const inflationMatched = +(prev.amount * inflationMultiplier).toFixed(2)
+      const inflationAdjusted = +(prev.amount * inflationMultiplier).toFixed(2)
       const inflationPct = multiplierToPct(inflationMultiplier)
 
-      // real % difference of actual new salary vs inflation-matched value
-      const realPct = pctDifference(entry.amount, inflationMatched)
+      // real % difference of actual new salary vs inflation-adjusted value
+      const realPct = pctDifference(entry.amount, inflationAdjusted)
 
       return {
         ...entry,
         prevPct,
-        inflationMatched,
+        inflationAdjusted,
         inflationPct,
         realPct
       }
@@ -100,7 +100,10 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                 }
                 showArrow={true}
               >
-                Inflation‑matched Salary 🛈
+                <div className="flex">
+                  Inflation‑adjusted Salary
+                  <InformationCircleIcon className="inline w-4 ml-1" />
+                </div>
               </Tooltip>
             </TableColumn>
             <TableColumn>
@@ -108,7 +111,7 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                 content={
                   <div className="px-1 py-2">
                     <div className="text-small">
-                      How your new salary compares to the inflation-matched
+                      How your new salary compares to the inflation-adjusted
                       value.
                       <br />
                       This is the “real” spending power change in your salary.
@@ -118,7 +121,10 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                 }
                 showArrow={true}
               >
-                Difference vs Inflation 🛈
+                <div className="flex">
+                  Difference vs Inflation
+                  <InformationCircleIcon className="inline w-4 ml-1" />
+                </div>
               </Tooltip>
             </TableColumn>
             <TableColumn hideHeader>Actions</TableColumn>
@@ -151,7 +157,7 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                     {formatters.pct(r.inflationPct, false)}
                   </TableCell>
                   <TableCell className={cellClassName}>
-                    {formatters.currency(r.inflationMatched)}
+                    {formatters.currency(r.inflationAdjusted)}
                   </TableCell>
                   <TableCell className={cellClassName}>
                     {idx === 0 ? (
