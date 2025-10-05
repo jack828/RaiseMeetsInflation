@@ -46,7 +46,6 @@ export default function SalaryInflationPage() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/*
           TODO TODO TODO TODO
-          inflation/pay growth data updater
           pagespeed metrics
           analytics
           nicer styling
