@@ -42,9 +42,9 @@ export interface SalaryEntry {
   datetime: Date
   amount: number
   prevPct?: number // % difference vs previous nominal
-  inflationMatched?: number // what previous salary would need to be to match inflation to this date
+  inflationAdjusted?: number // what previous salary would need to be to match inflation to this date
   inflationPct?: number // % inflation over period from previous to this date
-  realPct?: number // % difference of this salary vs inflation-matched amount
+  realPct?: number // % difference of this salary vs inflation-adjusted amount
 }
 
 export const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
