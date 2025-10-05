@@ -86,26 +86,6 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
             <TableColumn>Date</TableColumn>
             <TableColumn>Salary</TableColumn>
             <TableColumn>Pay Difference</TableColumn>
-            <TableColumn>Inflation over period</TableColumn>
-            <TableColumn>
-              <Tooltip
-                content={
-                  <div className="px-1 py-2">
-                    <div className="text-small">
-                      What you would have gotten if your employer ONLY matched
-                      to inflation. <br />
-                      That is, no real loss of spending power in your wage.
-                    </div>
-                  </div>
-                }
-                showArrow={true}
-              >
-                <div className="flex">
-                  Inflation‑adjusted Salary
-                  <InformationCircleIcon className="inline w-4 ml-1" />
-                </div>
-              </Tooltip>
-            </TableColumn>
             <TableColumn>
               <Tooltip
                 content={
@@ -123,6 +103,26 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
               >
                 <div className="flex">
                   Difference vs Inflation
+                  <InformationCircleIcon className="inline w-4 ml-1" />
+                </div>
+              </Tooltip>
+            </TableColumn>
+            <TableColumn>Inflation over period</TableColumn>
+            <TableColumn>
+              <Tooltip
+                content={
+                  <div className="px-1 py-2">
+                    <div className="text-small">
+                      What you would have gotten if your employer ONLY matched
+                      to inflation. <br />
+                      That is, no real loss of spending power in your wage.
+                    </div>
+                  </div>
+                }
+                showArrow={true}
+              >
+                <div className="flex">
+                  Inflation‑adjusted Salary
                   <InformationCircleIcon className="inline w-4 ml-1" />
                 </div>
               </Tooltip>
@@ -154,12 +154,6 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                     {formatters.pct(r.prevPct)}
                   </TableCell>
                   <TableCell className={cellClassName}>
-                    {formatters.pct(r.inflationPct, false)}
-                  </TableCell>
-                  <TableCell className={cellClassName}>
-                    {formatters.currency(r.inflationAdjusted)}
-                  </TableCell>
-                  <TableCell className={cellClassName}>
                     {idx === 0 ? (
                       '—'
                     ) : (
@@ -181,6 +175,12 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
                         {formatters.pct(r.realPct)}
                       </Chip>
                     )}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {formatters.pct(r.inflationPct, false)}
+                  </TableCell>
+                  <TableCell className={cellClassName}>
+                    {formatters.currency(r.inflationAdjusted)}
                   </TableCell>
                   <TableCell className={cellClassName}>
                     <Button
