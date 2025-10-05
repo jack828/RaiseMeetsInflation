@@ -16,6 +16,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@heroui/react": "^2.8.4",
+    "@next/third-parties": "^15.5.4",
     "@opennextjs/cloudflare": "^1.8.4",
     "@tailwindcss/postcss": "^4.1.13",
     "cheerio": "^1.1.2",

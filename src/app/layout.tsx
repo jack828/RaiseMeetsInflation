@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Roboto, Roboto_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 import './globals.css'
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body
         className={clsx('antialiased', roboto.variable, robotoMono.variable)}
       >
+        <GoogleAnalytics gaId="G-C90M5EB5BS" />
         <Providers>
           <NavigationBar />
           {children}
