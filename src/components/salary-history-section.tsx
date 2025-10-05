@@ -11,9 +11,10 @@ import {
   TableRow,
   TableCell,
   Chip,
-  Tooltip
+  Tooltip,
+  CardFooter
 } from '@heroui/react'
-import { InformationCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ArrowDownIcon, InformationCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
 import {
   compoundMultiplier,
@@ -203,6 +204,17 @@ export const SalaryHistorySection: React.FC<SalaryHistorySectionProps> = ({
           </TableBody>
         </Table>
       </CardBody>
+
+      {entries.length > 0 && (
+        <CardFooter className="flex flex-col justify-center space-y-2 text-center animate-flip-down">
+          <p>
+            Want to see how much you should ask for next?{' '}
+            <br className="block md:hidden" />
+            Scroll down and see.
+          </p>
+          <ArrowDownIcon className="size-8 animate-bounce" />
+        </CardFooter>
+      )}
     </Card>
   )
 }

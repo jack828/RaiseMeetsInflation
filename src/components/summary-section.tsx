@@ -1,9 +1,6 @@
 import { useMemo } from 'react'
-import { Card, CardHeader, CardBody, CardFooter } from '@heroui/react'
-import {
-  ArrowDownIcon,
-  CalendarDateRangeIcon
-} from '@heroicons/react/24/outline'
+import { Card, CardHeader, CardBody } from '@heroui/react'
+import { CalendarDateRangeIcon } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
 
 import {
@@ -225,17 +222,6 @@ export const SummarySection: React.FC<SummarySectionProps> = ({ entries }) => {
           </div>
         </div>
       </CardBody>
-
-      {entries.length > 0 && (
-        <CardFooter className="flex flex-col justify-center space-y-2 text-center animate-flip-down">
-          <p>
-            Want to see how much you should ask for next?{' '}
-            <br className="block md:hidden" />
-            Scroll down and see.
-          </p>
-          <ArrowDownIcon className="size-8 animate-bounce" />
-        </CardFooter>
-      )}
     </Card>
   )
 }

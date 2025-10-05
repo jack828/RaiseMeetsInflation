@@ -86,14 +86,14 @@ export default function SalaryInflationPage() {
 
         <SalaryInputSection handleAddSalary={onAddSalary} />
 
-        <SummarySection entries={entries} />
-
-        <Advert />
-
         <SalaryHistorySection
           entries={entries}
           handleRemoveSalary={onRemoveSalary}
         />
+
+        <Advert />
+
+        <SummarySection entries={entries} />
 
         <NextRaiseSection entries={entries} />
 
