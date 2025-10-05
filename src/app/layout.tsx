@@ -36,9 +36,8 @@ export const metadata: Metadata = {
     follow: true,
     nocache: false
   },
-  verification: {
-    // TODO
-    // google: 'google'
+  other: {
+    'google-adsense-account': 'ca-pub-0383732125265907'
   }
 }
 
