@@ -38,7 +38,8 @@ export const metadata: Metadata = {
     nocache: false
   },
   other: {
-    'google-adsense-account': 'ca-pub-0383732125265907'
+    'google-adsense-account': 'ca-pub-0383732125265907',
+    'admaven-placement': 'Bqja7rHwG'
   }
 }
 
