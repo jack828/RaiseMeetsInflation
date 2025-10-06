@@ -97,6 +97,7 @@ export default function SalaryInflationPage() {
 
         <Advert />
 
+        {/*
         <Card className="shadow p-4">
           <CardHeader>
             <h2 className="text-2xl font-semibold">Visualisation</h2>
@@ -109,6 +110,7 @@ export default function SalaryInflationPage() {
         </Card>
 
         <Advert />
+        */}
 
         <DisclaimerSection />
 
