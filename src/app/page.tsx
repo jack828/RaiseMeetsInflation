@@ -58,8 +58,8 @@ export default function SalaryInflationPage() {
 
           <CardBody className="space-y-2">
             <p>
-              Want a pay‑rise but aren’t sure what to ask
-              for? RaiseMeetsInflation lets you enter your salary history and
+              Want a pay rise but aren’t sure what to ask for?
+              RaiseMeetsInflation lets you enter your salary history and
               instantly compares it to inflation, market‑wide median growth, and
               the raise you’d earn if you negotiated today.
             </p>
@@ -72,11 +72,10 @@ export default function SalaryInflationPage() {
             </p>
 
             <p>
-              This tool highlights long‑term trends so you can make a
-              data‑driven case to your employer. Whether you’re waiting for a
-              long‑overdue boost or just curious how your earnings stack up
-              after a job change, the calculator shows you exactly where you
-              stand.
+              This tool highlights long‑term trends so you can make a data
+              driven case to your employer. Whether you’re waiting for a long
+              overdue boost or just curious how your earnings stack up after a
+              job change, the calculator shows you exactly where you stand.
             </p>
           </CardBody>
         </Card>
