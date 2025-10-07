@@ -47,8 +47,12 @@ export interface SalaryEntry {
   realPct?: number // % difference of this salary vs inflation-adjusted amount
 }
 
-export const toSalaryEntry = (date: string, amount: number): SalaryEntry => ({
-  id: uuidv4(),
+export const toSalaryEntry = (
+  date: string,
+  amount: number,
+  overrideId?: string
+): SalaryEntry => ({
+  id: overrideId ?? uuidv4(),
   date,
   datetime: parse(date, 'yyyy-MM', new Date()),
   amount
