@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Raleway } from 'next/font/google'
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'
 import {
@@ -18,8 +19,13 @@ const raleway = Raleway({
 })
 
 export default function NavigationBar() {
-  const { theme, systemTheme, setTheme } = useTheme()
-  const current = theme === 'system' ? systemTheme : theme
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <Navbar isBordered className="shadow-sm">
       <NavbarBrand>
@@ -36,15 +42,17 @@ export default function NavigationBar() {
 
       <NavbarContent justify="end">
         <NavbarItem>
-          <Switch
-            isSelected={current === 'dark'}
-            onValueChange={(isSelected) =>
-              setTheme(isSelected ? 'dark' : 'light')
-            }
-            size="lg"
-            startContent={<SunIcon />}
-            endContent={<MoonIcon />}
-          />
+          {mounted && (
+            <Switch
+              isSelected={resolvedTheme === 'dark'}
+              onValueChange={(isSelected) =>
+                setTheme(isSelected ? 'dark' : 'light')
+              }
+              size="lg"
+              startContent={<SunIcon />}
+              endContent={<MoonIcon />}
+            />
+          )}
         </NavbarItem>
       </NavbarContent>
     </Navbar>
