@@ -39,7 +39,8 @@ export const metadata: Metadata = {
   },
   other: {
     'google-adsense-account': 'ca-pub-0383732125265907',
-    'admaven-placement': 'Bqja7rHwG'
+    'admaven-placement': 'Bqja7rHwG',
+    monetag: '35074c7f10c728f991aaababf8d95aac'
   }
 }
 
