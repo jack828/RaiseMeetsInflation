@@ -55,9 +55,24 @@ export default function RootLayout({
         className={clsx('antialiased', roboto.variable, robotoMono.variable)}
       >
         <GoogleAnalytics gaId="G-C90M5EB5BS" />
+
         <Providers>
           <NavigationBar />
-          {children}
+          <div className="bg-slate-50 dark:bg-slate-900 min-h-screen p-6">
+            {/*<div className="grid grid-cols-[1fr_minmax(0,56rem)_1fr] gap-6 items-start">
+              <div className="order-1 hidden lg:flex justify-end">
+                <div className="w-[160px] h-[300px]">
+                  <Advert />
+                </div>
+              </div>
+
+              <div className="order-3 hidden lg:flex justify-start">
+                <div className="w-[160px]">right advert </div>
+              </div> */}
+
+            <main className="order-2 mx-auto w-full max-w-5xl">{children}</main>
+            {/*</div>*/}
+          </div>
         </Providers>
       </body>
     </html>

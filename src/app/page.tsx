@@ -42,10 +42,10 @@ export default function SalaryInflationPage() {
     setEntries((s) => s.filter((r) => r.id !== id))
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/*
           TODO TODO TODO TODO
+          vertical sidebar ads on desktop
           analytics
           graph
           ads
@@ -79,6 +79,7 @@ export default function SalaryInflationPage() {
             </p>
           </CardBody>
         </Card>
+
         <Advert />
 
         <SalaryInputSection handleAddSalary={onAddSalary} />
@@ -116,7 +117,6 @@ export default function SalaryInflationPage() {
         <Divider />
 
         <Footer />
-      </div>
     </div>
   )
 }
