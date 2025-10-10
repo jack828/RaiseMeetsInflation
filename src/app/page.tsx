@@ -11,19 +11,20 @@ import { Advert } from '@/components/advert'
 import { Footer } from '@/components/footer'
 import { DisclaimerSection } from '@/components/disclaimer-section'
 
+const devEntryUuid = '00000000-0000-0000-0000-0000000000'
 const devEntries: SalaryEntry[] = [
-  toSalaryEntry('2016-07', 15392, '00000000-0000-0000-0000-000000000001'),
-  toSalaryEntry('2016-09', 15392, '00000000-0000-0000-0000-000000000002'),
-  toSalaryEntry('2017-06', 17000, '00000000-0000-0000-0000-000000000003'),
-  toSalaryEntry('2018-08', 24992.76, '00000000-0000-0000-0000-000000000004'),
-  toSalaryEntry('2019-05', 27000, '00000000-0000-0000-0000-000000000005'),
-  toSalaryEntry('2019-06', 29000, '00000000-0000-0000-0000-000000000006'),
-  toSalaryEntry('2021-04', 34000, '00000000-0000-0000-0000-000000000007'),
-  toSalaryEntry('2022-01', 40000, '00000000-0000-0000-0000-000000000008'),
-  toSalaryEntry('2022-06', 50000, '00000000-0000-0000-0000-000000000009'),
-  toSalaryEntry('2023-08', 75000, '00000000-0000-0000-0000-000000000010'),
-  toSalaryEntry('2024-01', 78187.5, '00000000-0000-0000-0000-000000000011'),
-  toSalaryEntry('2025-02', 83000, '00000000-0000-0000-0000-000000000012')
+  toSalaryEntry('2016-07', 15392, false, 0, 0, devEntryUuid + '01'),
+  toSalaryEntry('2016-09', 15392, true, 8, 37, devEntryUuid + '02'),
+  toSalaryEntry('2017-06', 17000, false, 0, 0, devEntryUuid + '03'),
+  toSalaryEntry('2018-08', 24992.76, true, 12.99, 37, devEntryUuid + '04'),
+  toSalaryEntry('2019-05', 27000, false, 0, 0, devEntryUuid + '05'),
+  toSalaryEntry('2019-06', 29000, false, 0, 0, devEntryUuid + '06'),
+  toSalaryEntry('2021-04', 34000, false, 0, 0, devEntryUuid + '07'),
+  toSalaryEntry('2022-01', 40000, false, 0, 0, devEntryUuid + '08'),
+  toSalaryEntry('2022-06', 50000, false, 0, 0, devEntryUuid + '09'),
+  toSalaryEntry('2023-08', 75000, false, 0, 0, devEntryUuid + '10'),
+  toSalaryEntry('2024-01', 78187.5, false, 0, 0, devEntryUuid + '11'),
+  toSalaryEntry('2025-02', 83000, false, 0, 0, devEntryUuid + '12')
 ]
 const initialEntries = process.env.NODE_ENV === 'development' ? devEntries : []
 
@@ -41,9 +42,16 @@ export default function SalaryInflationPage() {
   const onRemoveSalary = (id: string) =>
     setEntries((s) => s.filter((r) => r.id !== id))
 
+  const onEditSalary = (editedEntry: SalaryEntry) =>
+    setEntries((s) => {
+      const index = s.findIndex((r) => r.id === editedEntry.id)
+      s[index] = editedEntry
+      return [...s]
+    })
+
   return (
-      <div className="space-y-6">
-        {/*
+    <div className="space-y-6">
+      {/*
           TODO TODO TODO TODO
           vertical sidebar ads on desktop
           analytics
@@ -51,53 +59,54 @@ export default function SalaryInflationPage() {
           ads
         */}
 
-        <Card className="shadow p-4">
-          <CardHeader className="">
-            <h2 className="text-2xl font-semibold">How to Use</h2>
-          </CardHeader>
+      <Card className="shadow p-4">
+        <CardHeader className="">
+          <h2 className="text-2xl font-semibold">How to Use</h2>
+        </CardHeader>
 
-          <CardBody className="space-y-2">
-            <p>
-              Want a pay rise but aren’t sure what to ask for?
-              RaiseMeetsInflation lets you enter your salary history and
-              instantly compares it to inflation, market‑wide median growth, and
-              the raise you’d earn if you negotiated today.
-            </p>
+        <CardBody className="space-y-2">
+          <p>
+            Want a pay rise but aren’t sure what to ask for? RaiseMeetsInflation
+            lets you enter your salary history and instantly compares it to
+            inflation, market‑wide median growth, and the raise you’d earn if
+            you negotiated today.
+          </p>
 
-            <p>
-              <strong>Why inflation matters:</strong> If your salary grows
-              slower than inflation, your purchasing power actually declines. In
-              real terms, you are taking a <strong>pay cut</strong> while doing
-              the same work.
-            </p>
+          <p>
+            <strong>Why inflation matters:</strong> If your salary grows slower
+            than inflation, your purchasing power actually declines. In real
+            terms, you are taking a <strong>pay cut</strong> while doing the
+            same work.
+          </p>
 
-            <p>
-              This tool highlights long‑term trends so you can make a data
-              driven case to your employer. Whether you’re waiting for a long
-              overdue boost or just curious how your earnings stack up after a
-              job change, the calculator shows you exactly where you stand.
-            </p>
-          </CardBody>
-        </Card>
+          <p>
+            This tool highlights long‑term trends so you can make a data driven
+            case to your employer. Whether you’re waiting for a long overdue
+            boost or just curious how your earnings stack up after a job change,
+            the calculator shows you exactly where you stand.
+          </p>
+        </CardBody>
+      </Card>
 
-        <Advert />
+      <Advert />
 
-        <SalaryInputSection handleAddSalary={onAddSalary} />
+      <SalaryInputSection handleAddSalary={onAddSalary} />
 
-        <SalaryHistorySection
-          entries={entries}
-          handleRemoveSalary={onRemoveSalary}
-        />
+      <SalaryHistorySection
+        entries={entries}
+        handleRemoveSalary={onRemoveSalary}
+        handleEditSalary={onEditSalary}
+      />
 
-        <Advert />
+      <Advert />
 
-        <SummarySection entries={entries} />
+      <SummarySection entries={entries} />
 
-        <NextRaiseSection entries={entries} />
+      <NextRaiseSection entries={entries} />
 
-        <Advert />
+      <Advert />
 
-        {/*
+      {/*
         <Card className="shadow p-4">
           <CardHeader>
             <h2 className="text-2xl font-semibold">Visualisation</h2>
@@ -112,11 +121,11 @@ export default function SalaryInflationPage() {
         <Advert />
         */}
 
-        <DisclaimerSection />
+      <DisclaimerSection />
 
-        <Divider />
+      <Divider />
 
-        <Footer />
+      <Footer />
     </div>
   )
 }

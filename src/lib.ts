@@ -41,21 +41,30 @@ export interface SalaryEntry {
   date: string // "YYYY-MM"
   datetime: Date
   amount: number
-  prevPct?: number // % difference vs previous nominal
-  inflationAdjusted?: number // what previous salary would need to be to match inflation to this date
-  inflationPct?: number // % inflation over period from previous to this date
-  realPct?: number // % difference of this salary vs inflation-adjusted amount
+  month: string // "MM"
+  year: string // "YYYY"
+  isHourly: boolean
+  hourlyRate: number
+  hoursPerWeek: number
 }
 
 export const toSalaryEntry = (
   date: string,
   amount: number,
+  isHourly: boolean,
+  hourlyRate: number,
+  hoursPerWeek: number,
   overrideId?: string
 ): SalaryEntry => ({
   id: overrideId ?? uuidv4(),
   date,
   datetime: parse(date, 'yyyy-MM', new Date()),
-  amount
+  amount,
+  month: date.split('-')[1],
+  year: date.split('-')[0],
+  isHourly,
+  hourlyRate,
+  hoursPerWeek,
 })
 
 export const multiplierToPct = (multiplier: number): number =>
