@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardHeader, CardBody, Divider } from '@heroui/react'
 import { SalaryEntry, toSalaryEntry } from '@/lib'
 import { NextRaiseSection } from '@/components/next-raise-section'
@@ -10,6 +10,7 @@ import { SalaryHistorySection } from '@/components/salary-history-section'
 import { Advert } from '@/components/advert'
 import { Footer } from '@/components/footer'
 import { DisclaimerSection } from '@/components/disclaimer-section'
+import Script from 'next/script'
 
 const devEntryUuid = '00000000-0000-0000-0000-0000000000'
 const devEntries: SalaryEntry[] = [
@@ -49,8 +50,40 @@ export default function SalaryInflationPage() {
       return [...s]
     })
 
+  const Ad = () => {
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+      setMounted(true)
+    }, [])
+    if (!mounted) {
+      return null
+    }
+    const t = `
+
+const loadAd = () => aclib.runBanner({ zoneId: '10509970' })
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.aclib) {
+      loadAd()
+    } else {
+      document
+        .querySelector('#aclib')
+        .addEventListener('load', loadAd)
+    }
+  })
+`
+    return (
+      <div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `aclib.runBanner({ zoneId: '10509970' })`
+          }}
+        />
+      </div>
+    )
+  }
   return (
     <div className="space-y-6">
+      <Ad />
       {/*
           TODO TODO TODO TODO
           vertical sidebar ads on desktop
