@@ -83,7 +83,6 @@ const loadAd = () => aclib.runBanner({ zoneId: '10509970' })
   }
   return (
     <div className="space-y-6">
-      <Ad />
       {/*
           TODO TODO TODO TODO
           vertical sidebar ads on desktop

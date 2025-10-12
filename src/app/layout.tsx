@@ -59,11 +59,6 @@ export default function RootLayout({
 
         <Providers>
           <NavigationBar />
-          <Script
-            id="aclib"
-            strategy="beforeInteractive"
-            src="https://acscdn.com/script/aclib.js"
-          />
           <div className="bg-slate-50 dark:bg-slate-900 min-h-screen p-6">
             {/*<div className="grid grid-cols-[1fr_minmax(0,56rem)_1fr] gap-6 items-start">
               <div className="order-1 hidden lg:flex justify-end">
