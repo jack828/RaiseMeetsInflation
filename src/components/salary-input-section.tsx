@@ -318,7 +318,7 @@ export const SalaryInputSection: React.FC<SalaryInputSectionProps> = ({
     <>
       <Card className="shadow p-4">
         <CardHeader>
-          <h1 className="text-2xl font-semibold">Pay Input</h1>
+          <h1 className="text-2xl font-semibold">Salary Input</h1>
         </CardHeader>
 
         <CardBody>
