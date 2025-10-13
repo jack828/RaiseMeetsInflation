@@ -50,37 +50,6 @@ export default function SalaryInflationPage() {
       return [...s]
     })
 
-  const Ad = () => {
-    const [mounted, setMounted] = useState(false)
-    useEffect(() => {
-      setMounted(true)
-    }, [])
-    if (!mounted) {
-      return null
-    }
-    const t = `
-
-const loadAd = () => aclib.runBanner({ zoneId: '10509970' })
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.aclib) {
-      loadAd()
-    } else {
-      document
-        .querySelector('#aclib')
-        .addEventListener('load', loadAd)
-    }
-  })
-`
-    return (
-      <div>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `aclib.runBanner({ zoneId: '10509970' })`
-          }}
-        />
-      </div>
-    )
-  }
   return (
     <div className="space-y-6">
       {/*
@@ -120,8 +89,6 @@ const loadAd = () => aclib.runBanner({ zoneId: '10509970' })
         </CardBody>
       </Card>
 
-      <Advert />
-
       <SalaryInputSection handleAddSalary={onAddSalary} />
 
       <SalaryHistorySection
@@ -135,8 +102,6 @@ const loadAd = () => aclib.runBanner({ zoneId: '10509970' })
       <SummarySection entries={entries} />
 
       <NextRaiseSection entries={entries} />
-
-      <Advert />
 
       {/*
         <Card className="shadow p-4">

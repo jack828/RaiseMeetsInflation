@@ -5,10 +5,14 @@ export const Advert = () => {
     return null
   }
   return (
-    <div className="flex flex-col rounded-large transition-transform-background border-dashed border-3 p-10 text-center text-current">
-      <p className="">Advert Placeholder</p>
-      <p className="text-sm">gotta pay the bills somehow</p>
-      <p className="text-sm">Don&apos;t like ads? Me neither.</p>
+    <div className="flex flex-col rounded-large transition-transform-background border-dashed border-2 p-6 text-center text-current">
+      <p className="text-sm">
+        I’d have “loved” to place an ad here - gotta pay the bills somehow -
+      </p>
+      <p className="text-sm">
+        but AdSense won’t verify me, and other companies are dodgy at best.
+      </p>
+      <p className="text-sm">So you get it free.</p>
       <p className="text-sm">
         <a
           href="https://ko-fi.com/jack828"
