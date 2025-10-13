@@ -28,6 +28,10 @@ export const DisclaimerSection: React.FC = () => {
             Inflation data sourced from the UK Office for National Statistics
             (ONS):
             <div className="mt-1 space-y-1">
+              <span className="italic">
+                Last updated {datasets.metadata.inflation.lastUpdated}.
+              </span>
+              <br />
               <a
                 className="text-primary-600"
                 href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"
@@ -36,9 +40,6 @@ export const DisclaimerSection: React.FC = () => {
               >
                 Consumer Price Inflation
               </a>{' '}
-              <span className="italic">
-                Last updated {datasets.metadata.inflation.lastUpdated}.
-              </span>
             </div>
           </li>
 
