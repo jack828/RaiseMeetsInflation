@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardHeader, CardBody, Divider } from '@heroui/react'
+import { Card, CardHeader, CardBody } from '@heroui/react'
 import { SalaryEntry, toSalaryEntry } from '@/lib'
 import { NextRaiseSection } from '@/components/next-raise-section'
 import { SalaryInputSection } from '@/components/salary-input-section'
 import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
 import { Advert } from '@/components/advert'
-import { Footer } from '@/components/footer'
 import { DisclaimerSection } from '@/components/disclaimer-section'
 import Script from 'next/script'
 
@@ -119,10 +118,6 @@ export default function SalaryInflationPage() {
         */}
 
       <DisclaimerSection />
-
-      <Divider />
-
-      <Footer />
     </div>
   )
 }

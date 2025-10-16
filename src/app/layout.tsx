@@ -55,12 +55,13 @@ export default function RootLayout({
       <body
         className={clsx('antialiased', roboto.variable, robotoMono.variable)}
       >
-        <script
+        <Script
           id="Cookiebot"
           src="https://consent.cookiebot.com/uc.js"
           data-cbid="0530b5b9-917c-4879-bab7-83d1c88cfb05"
           data-blockingmode="auto"
-        ></script>
+          strategy="beforeInteractive"
+        />
         <script data-cookieconsent="ignore">
           {`
             window.dataLayer = window.dataLayer || [];
