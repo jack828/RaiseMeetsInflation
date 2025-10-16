@@ -6,6 +6,8 @@ import './globals.css'
 import { Providers } from '@/providers'
 import NavigationBar from '@/components/navbar'
 import Script from 'next/script'
+import { Divider } from '@heroui/react'
+import { Footer } from '@/components/footer'
 
 const roboto = Roboto({
   variable: '--font-sans',
@@ -100,6 +102,10 @@ export default function RootLayout({
 
             <main className="order-2 mx-auto w-full max-w-5xl">{children}</main>
             {/*</div>*/}
+
+            <Divider className='my-6' />
+
+            <Footer />
           </div>
         </Providers>
       </body>
