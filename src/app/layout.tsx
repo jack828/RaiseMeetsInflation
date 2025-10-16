@@ -55,6 +55,32 @@ export default function RootLayout({
       <body
         className={clsx('antialiased', roboto.variable, robotoMono.variable)}
       >
+        <script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="0530b5b9-917c-4879-bab7-83d1c88cfb05"
+          data-blockingmode="auto"
+        ></script>
+        <script data-cookieconsent="ignore">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag('consent', 'default', {
+              'ad_personalization': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'analytics_storage': 'denied',
+              'functionality_storage': 'denied',
+              'personalization_storage': 'denied',
+              'security_storage': 'granted',
+              'wait_for_update': 500,
+            });
+            gtag("set", "ads_data_redaction", true);
+            gtag("set", "url_passthrough", true);
+          `}
+        </script>
         <GoogleAnalytics gaId="G-C90M5EB5BS" />
 
         <Providers>
