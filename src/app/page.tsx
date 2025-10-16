@@ -39,7 +39,7 @@ export default function SalaryInflationPage() {
     )
 
     window.dataLayer?.push({
-      event: 'addSalary',
+      event: 'add_salary',
       amount: entry.amount,
       datetime: entry.datetime,
       isHourly: entry.isHourly,
@@ -48,8 +48,10 @@ export default function SalaryInflationPage() {
     })
   }
 
-  const onRemoveSalary = (id: string) =>
+  const onRemoveSalary = (id: string) => {
     setEntries((s) => s.filter((r) => r.id !== id))
+    window.dataLayer?.push({ event: 'remove_salary' })
+  }
 
   const onEditSalary = (editedEntry: SalaryEntry) => {
     setEntries((s) => {
@@ -59,7 +61,7 @@ export default function SalaryInflationPage() {
     })
 
     window.dataLayer?.push({
-      event: 'editSalary',
+      event: 'edit_salary',
       amount: editedEntry.amount,
       datetime: editedEntry.datetime,
       isHourly: editedEntry.isHourly,
