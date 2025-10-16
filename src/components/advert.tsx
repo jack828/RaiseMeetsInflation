@@ -1,9 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
 export const Advert = () => {
-  if (process.env.NODE_ENV !== 'development') {
-    return null
-  }
   return (
     <div className="flex flex-col rounded-large transition-transform-background border-dashed border-2 p-6 text-center text-current">
       <p className="text-sm">
