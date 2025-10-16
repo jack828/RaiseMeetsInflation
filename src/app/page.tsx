@@ -37,17 +37,36 @@ export default function SalaryInflationPage() {
         .concat(entry)
         .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
     )
+
+    window.dataLayer?.push({
+      event: 'addSalary',
+      amount: entry.amount,
+      datetime: entry.datetime,
+      isHourly: entry.isHourly,
+      hourlyRate: entry.hourlyRate,
+      hoursPerWeek: entry.hoursPerWeek
+    })
   }
 
   const onRemoveSalary = (id: string) =>
     setEntries((s) => s.filter((r) => r.id !== id))
 
-  const onEditSalary = (editedEntry: SalaryEntry) =>
+  const onEditSalary = (editedEntry: SalaryEntry) => {
     setEntries((s) => {
       const index = s.findIndex((r) => r.id === editedEntry.id)
       s[index] = editedEntry
       return [...s]
     })
+
+    window.dataLayer?.push({
+      event: 'editSalary',
+      amount: editedEntry.amount,
+      datetime: editedEntry.datetime,
+      isHourly: editedEntry.isHourly,
+      hourlyRate: editedEntry.hourlyRate,
+      hoursPerWeek: editedEntry.hoursPerWeek
+    })
+  }
 
   return (
     <div className="space-y-6">
