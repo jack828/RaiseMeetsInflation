@@ -13,6 +13,7 @@ import {
 import { useTheme } from 'next-themes'
 import { clsx } from 'clsx'
 import { LogoSvg } from './logo-svg'
+import Link from 'next/link'
 
 const raleway = Raleway({
   subsets: ['latin']
@@ -28,17 +29,19 @@ export default function NavigationBar() {
 
   return (
     <Navbar isBordered className="shadow-sm">
-      <NavbarBrand>
-        <LogoSvg width={32} height={32} />
-        <p
-          className={clsx(
-            'ml-2 text-2xl sm:text-3xl font-bold',
-            raleway.className
-          )}
-        >
-          Raise Meets Inflation
-        </p>
-      </NavbarBrand>
+      <Link href="/">
+        <NavbarBrand>
+          <LogoSvg width={32} height={32} />
+          <p
+            className={clsx(
+              'ml-2 text-2xl sm:text-3xl font-bold',
+              raleway.className
+            )}
+          >
+            Raise Meets Inflation
+          </p>
+        </NavbarBrand>
+      </Link>
 
       <NavbarContent justify="end">
         <NavbarItem>
