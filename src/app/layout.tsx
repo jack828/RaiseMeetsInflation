@@ -7,6 +7,7 @@ import { Providers } from '@/providers'
 import NavigationBar from '@/components/navbar'
 import { Divider } from '@heroui/react'
 import { Footer } from '@/components/footer'
+import { SITE_URL } from '@/lib'
 
 const roboto = Roboto({
   variable: '--font-sans',
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
   description: 'See how your pay matches up to inflation.',
   authors: [{ name: 'Jack Burgess', url: 'https://jackburgess.dev' }],
   creator: 'Jack Burgess',
-  metadataBase: new URL('https://raisemeetsinflation.co.uk'),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: 'website'
   },

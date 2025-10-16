@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
       <span>
         <a href="https://jackburgess.dev">Jack Burgess</a> &copy;{' '}
         {new Date().getFullYear()}. You can view the{' '}
-        <Link href="/cookie-policy" className='text-blue-500'>Cookie Policy</Link> at any time.
+        <Link href="/legal/cookie-policy" className='text-blue-500'>Cookie Policy</Link> at any time.
       </span>
       <br />
       <span>Powered my tea, marmalade, and curiosity.</span>

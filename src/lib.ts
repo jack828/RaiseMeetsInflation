@@ -3,6 +3,8 @@ import { add, parse } from 'date-fns'
 import { InflationDataEntry } from './datasets'
 import { Selection } from '@heroui/react'
 
+export const SITE_URL = 'https://raisemeetsinflation.co.uk'
+
 // TODO refactor out
 export const monthKey = (isoMonth: string): InflationDataEntry =>
   isoMonth.slice(0, 7) as InflationDataEntry
