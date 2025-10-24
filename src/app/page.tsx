@@ -74,10 +74,12 @@ export default function SalaryInflationPage() {
     <div className="space-y-6">
       {/*
           TODO TODO TODO TODO
-          vertical sidebar ads on desktop
-          analytics
+          increase salary input range and support outwith pay growth data range
           graph
-          ads
+          graph/show other interesting inflation metric trackers
+          big mac index
+          freddo index
+          etc
         */}
 
       <Card className="shadow p-4">
@@ -105,6 +107,12 @@ export default function SalaryInflationPage() {
             case to your employer. Whether you’re waiting for a long overdue
             boost or just curious how your earnings stack up after a job change,
             the calculator shows you exactly where you stand.
+          </p>
+
+          <p>
+            Please note that the minimum date is <strong>2015</strong> as this
+            is when our pay growth data cuts off. We&apos;re working to improve
+            the size of the data we have there!
           </p>
         </CardBody>
       </Card>
