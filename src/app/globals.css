@@ -3,3 +3,10 @@
 @plugin '../../hero.ts';
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
+
+.apexcharts-menu-item.exportCSV {
+  display: none;
+}
+.apexcharts-menu-item.exportSVG {
+  display: none;
+}

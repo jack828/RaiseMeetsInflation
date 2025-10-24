@@ -1,12 +1,18 @@
 import { intervalToDuration } from 'date-fns'
 
-export const currency = (v?: number) =>
-  v == null
-    ? '—'
-    : new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: 'GBP'
-      }).format(v)
+export const currency = (value?: number, decimals: boolean = true) => {
+  if (value === null || value === undefined) {
+    return '-'
+  }
+  let formatted = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP'
+  }).format(value)
+  if (decimals) {
+    return formatted
+  }
+  return formatted.slice(0, formatted.lastIndexOf('.'))
+}
 
 export const pct = (v?: number, showPlusMinus: boolean = true) =>
   v === null || typeof v === 'undefined'

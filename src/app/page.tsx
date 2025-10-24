@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card, CardHeader, CardBody } from '@heroui/react'
 import { SalaryEntry, toSalaryEntry } from '@/lib'
 import { NextRaiseSection } from '@/components/next-raise-section'
@@ -9,7 +9,7 @@ import { SummarySection } from '@/components/summary-section'
 import { SalaryHistorySection } from '@/components/salary-history-section'
 import { Advert } from '@/components/advert'
 import { DisclaimerSection } from '@/components/disclaimer-section'
-import Script from 'next/script'
+import { ChartsSection } from '@/components/charts-section'
 
 const devEntryUuid = '00000000-0000-0000-0000-0000000000'
 const devEntries: SalaryEntry[] = [
@@ -74,8 +74,8 @@ export default function SalaryInflationPage() {
     <div className="space-y-6">
       {/*
           TODO TODO TODO TODO
+          use heroui Link component with showAnchorIcon
           increase salary input range and support outwith pay growth data range
-          graph
           graph/show other interesting inflation metric trackers
           big mac index
           freddo index
@@ -131,20 +131,7 @@ export default function SalaryInflationPage() {
 
       <NextRaiseSection entries={entries} />
 
-      {/*
-        <Card className="shadow p-4">
-          <CardHeader>
-            <h2 className="text-2xl font-semibold">Visualisation</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="h-64 bg-default-100 rounded-lg flex items-center justify-center">
-              <p className="text-default-400">Chart placeholder</p>
-            </div>
-          </CardBody>
-        </Card>
-
-        <Advert />
-        */}
+      <ChartsSection entries={entries} />
 
       <DisclaimerSection />
     </div>
