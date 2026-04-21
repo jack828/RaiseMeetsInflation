@@ -19,6 +19,8 @@
     "@next/third-parties": "^15.5.4",
     "@opennextjs/cloudflare": "^1.8.4",
     "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "20.19.17",
+    "@types/react": "19.1.13",
     "apexcharts": "^5.3.5",
     "cheerio": "^1.1.2",
     "clsx": "^2.1.1",
@@ -41,8 +43,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.35.0",
     "eslint-config-next": "15.5.3",
