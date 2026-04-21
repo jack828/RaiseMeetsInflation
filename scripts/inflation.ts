@@ -40,6 +40,7 @@ import { InflationDataEntry } from '@/datasets'
     return
   }
 
+  console.log(latestDataset)
   console.log('Updating dataset...')
 
   const datasetCsvHref = latestDataset.downloads.csv.href
