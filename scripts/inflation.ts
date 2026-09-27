@@ -1,5 +1,15 @@
-import { parse, format, startOfMonth, add, isAfter, parseISO } from 'date-fns'
+import {
+  parse,
+  format,
+  startOfMonth,
+  add,
+  isAfter,
+  parseISO,
+  sub
+} from 'date-fns'
 import * as csv from 'csv-parse/sync'
+import * as XLSX from 'xlsx'
+import * as cheerio from 'cheerio'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { monthKey, pctDifference } from '@/lib'
@@ -11,13 +21,118 @@ import { InflationDataEntry } from '@/datasets'
 //   ).then((r) => r.json())
 ;(async () => {
   // const datasets = await getPage(1, 1000)
-  // console.log(datasets)
+  // console.log(Object.keys(datasets))
+  // console.log(datasets.items.filter(i => JSON.stringify(i).toLowerCase().includes('consumerpriceinflation')))
 
   const metadataFile = path.join(__dirname, '../src/data/metadata.json')
   const metadata = await fs
     .readFile(metadataFile, 'utf8')
     .then((d) => JSON.parse(d))
 
+  const onsInflationPage = await fetch(
+    'https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceinflation'
+  ).then((res) => res.text())
+  const $ = cheerio.load(onsInflationPage)
+
+  const lastUpdatedDateEl = $(
+    // @ts-expect-error
+    $('div.meta__term')
+      .toArray()
+      .find((el) => $(el).text().includes('Release')).next.next
+  )
+  console.log({ lastUpdatedDateEl })
+  const lastUpdatedDate = sub(
+    parse(lastUpdatedDateEl.text(), 'd MMMM yyyy', new Date()),
+    {
+      minutes: new Date().getTimezoneOffset()
+    }
+  )
+  console.log({ lastUpdatedDate })
+  const downloadButton = $('a[aria-label^="Download"]')
+  console.log(downloadButton)
+
+  if (!isAfter(lastUpdatedDate, parseISO(metadata.inflation.lastUpdated))) {
+    console.log(
+      `Remote dataset not newer than the one recorded (local: ${metadata.inflation.lastUpdated}, remote: ${lastUpdatedDate.toISOString()}), exiting...`
+    )
+    return
+  }
+
+  const latestDatasetUrl =
+    'https://www.ons.gov.uk' + downloadButton.attr('href')
+  console.log({ latestDatasetUrl })
+
+  const raw = await fetch(latestDatasetUrl).then((res) => res.arrayBuffer())
+  const workbook = XLSX.read(raw)
+
+  // CPIH: Detailed indices to 3 dp: 1988 to 2026
+  const sheetIndex = workbook.SheetNames.findIndex((n) => n === 'Table 37')
+  console.log(workbook.SheetNames[sheetIndex])
+  const sheet = workbook.Sheets[workbook.SheetNames[sheetIndex]]
+
+  const rows: string[] = XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null
+  })
+
+  const headerIndex = rows.findIndex(
+    ([a, b]) => a?.trim() === 'index date' && b?.trim() === 'name'
+  )
+
+  // console.log(rows)
+  const parsedRows = rows.slice(headerIndex + 1).map(
+    ([indexDate, rawDate, value]) => {
+      console.log({ indexDate, rawDate, value })
+      if (!indexDate || !rawDate || !value) {
+        return null
+      }
+      const parsed = parse(String(indexDate), 'yyyyMM', new Date())
+
+      // fucking timezones
+      const date = add(startOfMonth(parsed), {
+        days: 1
+      })
+      const key = monthKey(date.toISOString())
+      return {
+        date,
+        key,
+        value: Number(value)
+      }
+    },
+    {} as Record<string, string | number>
+  )
+
+  console.log('Total rows', parsedRows.length)
+  const convertedRows = parsedRows.reduce(
+    (acc, r, i) => {
+      if (!r) {
+        return acc
+      }
+      const yearAgo = parsedRows[i - 12]
+      if (!yearAgo) {
+        return acc
+      }
+      acc[r.key] = {
+        value: Number(pctDifference(r.value, yearAgo.value).toFixed(2)),
+        date: r.key
+      }
+      return acc
+    },
+    {} as Record<InflationDataEntry, object>
+  )
+  console.log('Converted to metrics', Object.keys(convertedRows).length)
+
+  // console.log(convertedRows)
+
+  await fs.writeFile(
+    path.join(__dirname, '../src/data/inflation.json'),
+    JSON.stringify(convertedRows, null, 2)
+  )
+
+  metadata.inflation.lastUpdated = lastUpdatedDate.toISOString()
+  await fs.writeFile(metadataFile, JSON.stringify(metadata, null, 2))
+  process.exit()
+  /*
   const inflationDataset = await fetch(
     'https://api.beta.ons.gov.uk/v1/datasets/cpih01'
   ).then((r) => r.json())
@@ -98,4 +213,5 @@ import { InflationDataEntry } from '@/datasets'
 
   metadata.inflation.lastUpdated = latestDataset.last_updated
   await fs.writeFile(metadataFile, JSON.stringify(metadata, null, 2))
+*/
 })()
